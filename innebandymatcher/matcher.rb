@@ -21,6 +21,7 @@ season = ARGV[1]
 
 event_starts_minutes_before_match = 45
 event_ends_minutes_after_match = 60
+contact_person = "B Waller"
 
 uri = "http://www.stockholminnebandy.nu/FA/Lagmatcher.asp?LAGID="+lagid+"&SFKOD="+sfkod+"&SDFKOD="+sfkod+"&SASONG="+season
 doc = Nokogiri::HTML(open(uri))
@@ -56,7 +57,7 @@ doc.css('tr').each do |element|
     print eventend.strftime("%H:%M"),";"
     print matchstart.strftime("%Y-%m-%d"),";"
     print matchstart.strftime("%Y-%m-%d"),";"
-    print 'Bjorn Waller'
+    print contact_person
     print "\n"
   end
 end
