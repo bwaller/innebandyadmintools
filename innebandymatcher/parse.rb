@@ -23,7 +23,7 @@ File.open(file,"r").each_line do |line|
   hemmalag = data[4].strip
   bortalag = data[5].strip
   datum = data[6]
-  arena = data [7].strip
+  arena = data[8].strip
 
   if ( datum.size > 0 ) then 
     year = datum.split("-")[0].to_i
