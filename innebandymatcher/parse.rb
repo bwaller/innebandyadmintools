@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+# encoding: utf-8
 
 require 'date'
 
@@ -10,6 +11,45 @@ veckodag[4] = "onsdag" #Om matchen spelas en söndag är svarsdag ändå onsdag
 veckodag[5] = "fredag"
 veckodag[6] = "lordag"
 veckodag[7] = "sondag"
+
+def arena_address(name)
+
+  case name
+  when "Åkersberga Sporthall A"
+      return "Hackstavägen 43", "184 35 Åkersberga"
+  when "Ärvingehallen"
+      return "Köpenhamnsgatan 15", "164 42 Kista"
+  when "Björkebyhallen"
+      return "Brasvägen 2", "175 61 Järfälla"
+  when "Djurö Sporthall"
+      return "Högmalmsvägen 10", "130 40 Djurhamn"
+  when "Ekhammarshallen"
+      return "Skolvägen 20", "196 30 Kungsängen"
+  when "Farstahallen 3"
+      return "Farstaängsvägen 3", "123 46 Farsta"
+  when "Grindtorpshallen"
+      return "Grindtoprsvägen 1a", "183 32 Täby"
+  when "Hammarbackens Sporthall"
+      return "Ekebyvägen 2", "183 34 Vallentuna"
+  when "Ingarö Sporthall"
+      return "Brunns Skola", "134 60 Ingarö"
+  when "Nya Rotebrohallen"
+      return "Ebba Brahes Väg 3", "192 69 Sollentuna"
+  when "Strandhallen - Tyresö"
+      return "Lagergrens väg 10", "135 63 Tyresö"
+  when "Sätrahallen"
+      return "Björksätravägen 2", "127 37 Skärholmen"
+  when "Söderbymalmskolan"
+      return "Eskilsvägen 8", "136 81 Handen"
+  when "Tappströms Bollhall"
+      return "Tappströmsvägen 1", "178 23 Ekerö"
+  when "Tomtbergahallen"
+      return "Rådsvägen 1", "141 48 Huddinge"
+  when "Vikingavallen - Bollhallen Täby IP"
+      return "Hövdingavägen 1-3","187 77 Täby"
+  else return "NOT DEFINED","NOT DEFINED"
+  end
+end
 
 file = ARGV[0]
 
@@ -51,7 +91,13 @@ File.open(file,"r").each_line do |line|
   print "Matcher,"
   print hemmalag, " vs ", bortalag,","
   print arena,"," 
-  print "Matchstart ", matchstart.strftime("%H:%M"),". Osa senast ", veckodag[answerdate.cwday], " 20.00.",","
+  road, postalcode = arena_address(arena)
+  print "<p>Matchstart ", matchstart.strftime("%H:%M"),". Osa senast ", veckodag[answerdate.cwday], " 20.00.</p>"
+  if arena != "Tappströms Bollhall" 
+    print "<p><a href=\"http://maps.google.se/maps?q=", road,"+", postalcode,"\">",arena, "</a> har adress: <br />",road, "<br /> ", postalcode,"</p>,"
+  else 
+    print ","
+  end
   print eventstart.strftime("%H:%M"),","
   print eventend.strftime("%H:%M"),","
   print matchstart.strftime("%Y-%m-%d"),","
