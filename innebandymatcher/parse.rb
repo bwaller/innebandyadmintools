@@ -94,7 +94,7 @@ File.open(file,"r").each_line do |line|
   road, postalcode = arena_address(arena)
   print "<p>Matchstart ", matchstart.strftime("%H:%M"),". Osa senast ", veckodag[answerdate.cwday], " 20.00.</p>"
   if arena != "Tappströms Bollhall" 
-    print "<p><a href=\"http://maps.google.se/maps?q=", road,"+", postalcode,"\">",arena, "</a> har adress: <br />",road, "<br /> ", postalcode,"</p>,"
+    print "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=", road,"+", postalcode,"\">",arena, "</a> har adress: <br />",road, "<br /> ", postalcode,"</p>,"
   else 
     print ","
   end
