@@ -35,6 +35,8 @@ def arena_address(name)
       return "Brunns Skola", "134 60 Ingarö"
   when "Rotebrohallen (Nya)"
       return "Ebba Brahes Väg 3", "192 69 Sollentuna"
+  when "Silverdalshallen"
+      return "Johannesbergsvägen 9", "191 38 Sollentuna"
   when "Strandhallen - Tyresö"
       return "Lagergrens väg 10", "135 63 Tyresö"
   when "Sätrahallen"
