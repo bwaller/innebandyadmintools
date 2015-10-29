@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 require 'date'
+require 'writeexcel'
 
 veckodag = Array.new(7)
 veckodag[1] = "mandag"
@@ -53,14 +54,30 @@ def arena_address(name)
   end
 end
 
-file = ARGV[0]
+filename = ARGV[0]
 
 event_starts_minutes_before_match = 45
 event_ends_minutes_after_match = 60
 contact_person = "B Waller"
 
-puts "Kalendertyp,Title,Arena,Info,Eventstart,Eventslut,Startdatum,Slutdatum,Contact"
-File.open(file,"r").each_line do |line|
+workbook = WriteExcel.new(filename.gsub(/\..*$/,"")+".xls")
+worksheet = workbook.add_worksheet
+row = 0
+
+worksheet.write(row, 0, "Kalendertyp")
+worksheet.write(row, 1, "Titel")
+worksheet.write(row, 2, "Plats")
+worksheet.write(row, 3, "Innehåll")
+worksheet.write(row, 4, "Starttid")
+worksheet.write(row, 5, "Sluttid")
+worksheet.write(row, 6, "Startdatum")
+worksheet.write(row, 7, "Stopdatum")
+worksheet.write(row, 8, "Kontakt")
+
+File.open(filename,"r").each_line do |line|
+
+  row += 1   
+
   data = line.split(/\t/)
   hemmalag = data[4].strip
   bortalag = data[5].strip
@@ -90,21 +107,22 @@ File.open(file,"r").each_line do |line|
 
 #  puts "hl: "+hemmalag+" bl: "+bortalag+" start: "+startdatum+" hall: "+hall
   
-  print "Matcher,"
-  print hemmalag, " vs ", bortalag,","
-  print arena,"," 
   road, postalcode = arena_address(arena)
-  print "<p>Matchstart ", matchstart.strftime("%H:%M"),". Osa senast ", veckodag[answerdate.cwday], " 20.00.</p>"
+  info = "<p>Matchstart " + matchstart.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
   if arena != "Tappströms Bollhall" 
-    print "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=", road,"+", postalcode,"\">",arena, "</a> har adress: <br />",road, "<br /> ", postalcode,"</p>,"
-  else 
-    print ","
+    info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=" + road + "+" + postalcode + "\">" + arena + "</a> har adress: <br />" + road + "<br /> " + postalcode + "</p>"
   end
-  print eventstart.strftime("%H:%M"),","
-  print eventend.strftime("%H:%M"),","
-  print matchstart.strftime("%Y-%m-%d"),","
-  print matchstart.strftime("%Y-%m-%d"),","
-  print contact_person
-  print "\n"
+
+  worksheet.write(row, 0, "Matcher")
+  worksheet.write(row, 1, hemmalag + " vs " + bortalag)
+  worksheet.write(row, 2, arena)
+  worksheet.write(row, 3, info)
+  worksheet.write(row, 4, eventstart.strftime("%H:%M"))
+  worksheet.write(row, 5, eventend.strftime("%H:%M"))
+  worksheet.write(row, 6, matchstart.strftime("%Y-%m-%d"))
+  worksheet.write(row, 7, matchstart.strftime("%Y-%m-%d"))
+  worksheet.write(row, 8, contact_person)
 
 end
+
+workbook.close
