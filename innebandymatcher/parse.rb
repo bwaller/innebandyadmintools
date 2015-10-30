@@ -32,8 +32,14 @@ def arena_address(name)
       return "Grindtoprsvägen 1a", "183 32 Täby"
   when "Hammarbackens Sporthall"
       return "Ekebyvägen 2", "183 34 Vallentuna"
+  when "Hässelbyhallen"
+      return "Köpingsvägen 22", "165 72 Hässelby"
+  when "IF Hallen"
+      return "Petersbergsvägen 3", "185 34 Vaxholm"
   when "Ingarö Sporthall"
       return "Brunns Skola", "134 60 Ingarö"
+  when "Prästängshallen"
+      return "John Åkerlunds Väg 10 A", "193 31 Sigtuna"
   when "Rotebrohallen (Nya)"
       return "Ebba Brahes Väg 3", "192 69 Sollentuna"
   when "Silverdalshallen"
@@ -50,6 +56,8 @@ def arena_address(name)
       return "Rådsvägen 1", "141 48 Huddinge"
   when "Vikingavallen - Bollhallen Täby IP"
       return "Hövdingavägen 1-3","187 77 Täby"
+  when "Viksjö Sporthall"
+      return "Viksjöplan 4","175 45 Järfälla"
   else return "NOT DEFINED","NOT DEFINED"
   end
 end
