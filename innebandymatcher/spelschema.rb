@@ -133,12 +133,13 @@ class EventWorksheet < Writeexcel::Worksheet
         if event = events[date.strftime("%F")] then
           row = 1 + (event.start_time.hour-@starthour)*4+event.start_time.minute/15
           top_format, side_format, bottom_format = self.getformat(event)
-          write(row, col, event.series, top_format)
-          write(row + 1, col, event.opponents, side_format)
-          write(row + 2, col, event.arena, side_format)
+          write_blank(row, col, top_format)
+          write_blank(row + 1, col, side_format)
+          write_blank(row + 2, col, side_format)
           write_blank(row + 3, col, bottom_format)
         end
         col += 1
+        set_column(col, col, 0.5)
       end 
       last_col = col - 1
       merge_range(0, first_col, 0, last_col, date.strftime(head_format), @workbook.add_format())
@@ -176,12 +177,6 @@ end
 
 workbook = EventWorkbook.new(filename) 
 worksheet = workbook.add_worksheet(DateTime.now.year, 45, 15)
-
-worksheet.add_event Event.new("P-LR-M-D","2015-11-15","14:00", 60, "Hässelby IK", "Tappströms Bollhall")
-worksheet.add_event Event.new("P-LR-MS-A","2015-11-20","14:15", 60, "Kungsängen IF", "IF Hallen")
-worksheet.add_event Event.new("P-LR-ML-B","2015-11-21","14:30", 60, "Ingarö IF (B)", "Tappströms Bollhall")
-worksheet.add_event Event.new("P-LR-ML-B","2015-11-22","14:45", 60, "Sundbybergs IK (A)", "Eriksdalshallen")
-worksheet.add_event Event.new("P-LR-M-D","2016-01-12","16:00", 60, "Huddinge IBF", "Tappströms Bollhall")
 
 #worksheet.dump
 
