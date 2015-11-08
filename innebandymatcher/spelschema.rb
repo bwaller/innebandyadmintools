@@ -41,7 +41,7 @@ class Event
   end
 
   def away
-    return @arena == @@home_arena ? false : true
+    return !home
   end
 
 end # game
@@ -87,8 +87,21 @@ class EventWorksheet < Writeexcel::Worksheet
     @away_top_format = workbook.add_format(:top => 1, :left => 1, :right => 1, :bg_color => 'yellow')
     @away_side_format = workbook.add_format(:left => 1, :right => 1, :bg_color => 'yellow')
     @away_bottom_format = workbook.add_format(:bottom => 1, :left => 1, :right => 1, :bg_color => 'yellow')
+    @series = Hash.new
+    set_landscape
+    set_paper(9) # A4
+    set_print_scale(45)
     print_rows
   end 
+
+  def add_event(event)
+    if ( @series.has_key?(event.series) ) then 
+      @series[event.series][event.eventdate_str] = event
+    else
+      @series[event.series] = Hash.new
+      @series[event.series][event.eventdate_str] = event
+    end
+ end
 
   def print_rows
     (@starthour...@endhour).each do |hour|
@@ -96,7 +109,7 @@ class EventWorksheet < Writeexcel::Worksheet
         hour.to_s.size == 2 ? hour_str = hour.to_s: hour_str = "0"+hour.to_s 
         minute.to_s.size == 2 ? minute_str = minute.to_s: minute_str = "0"+minute.to_s 
         time_str = "T"+hour_str + ":" + minute_str + ".0"
-        self.write_date_time(@row, 0, time_str, @time_format)
+        write_date_time(@row, 0, time_str, @time_format)
         @row += 1
       end
     end
@@ -110,51 +123,69 @@ class EventWorksheet < Writeexcel::Worksheet
     end
   end
 
-  def print_column (year, week, col, events, head_format = @head_format)
+  def print_column (year, week, col, series, head_format = @head_format)
+    first_col, last_col = col
     (Date.commercial(year,week,5)..Date.commercial(year, week, 7)).each do |date|
-      self.write(0, col, date.strftime(head_format))
-      if event = events[date.strftime("%F")] then
-        row = 1 + (event.start_time.hour-@starthour)*4+event.start_time.minute/15
-        top_format, side_format, bottom_format = self.getformat(event)
-        self.write(row, col, event.series, top_format)
-        self.write(row + 1, col, event.opponents, side_format)
-        self.write(row + 2, col, event.arena, side_format)
-        self.write_blank(row + 3, col, bottom_format)
-      end
-      col += 1 
+      write(0, col, date.strftime(head_format))
+      series.each do |serie, events|
+        set_column(col, col, 3)
+        write(1, col, serie)
+        if event = events[date.strftime("%F")] then
+          row = 1 + (event.start_time.hour-@starthour)*4+event.start_time.minute/15
+          top_format, side_format, bottom_format = self.getformat(event)
+          write(row, col, event.series, top_format)
+          write(row + 1, col, event.opponents, side_format)
+          write(row + 2, col, event.arena, side_format)
+          write_blank(row + 3, col, bottom_format)
+        end
+        col += 1
+      end 
+      last_col = col - 1
+      merge_range(0, first_col, 0, last_col, date.strftime(head_format), @workbook.add_format())
+      first_col = col
     end
-    return col 
+    set_column(col, col, 1)
+    return col + 1
   end
 
-  def print_columns(events)
+  def print_columns
     year = @year 
     (@start_week..51).each do |week|
-      @col = print_column(year, week, @col, events)
+      @col = print_column(year, week, @col, @series)
     end
     #next year
     year += 1
     (1..@end_week).each do |week|
-      @col = print_column(@year+1, week, @col, events)
+      @col = print_column(@year+1, week, @col, @series)
     end
   end
+
+  def dump
+    @series.each do |serie, events|
+      puts "Events for serie " + serie.to_s
+      events.each_value do |event|
+        puts event.eventdate_str + " " + event.start_time_str + " " + event.opponents + " " + event.arena
+      end
+    end
+  end
+
 end
 
 #test
-events = Hash.new
-event = Event.new("P-LR-M-D","2015-11-15","14:00", 60, "Hässelby IK", "Tappströms Bollhall")
-events[event.eventdate_str] = event
-event = Event.new("P-LR-M-D","2015-11-20","14:15", 60, "Kungsängen IF", "IF Hallen")
-events[event.eventdate_str] = event
-event = Event.new("P-LR-M-D","2015-11-21","14:30", 60, "Ingarö IF (B)", "Tappströms Bollhall")
-events[event.eventdate_str] = event
-event = Event.new("P-LR-M-D","2015-11-22","14:45", 60, "Sundbybergs IK (A)", "Eriksdalshallen")
-events[event.eventdate_str] = event
-event = Event.new("P-LR-M-D","2016-01-12","16:00", 60, "Huddinge IBF", "Tappströms Bollhall")
-events[event.eventdate_str] = event
+
 
 workbook = EventWorkbook.new(filename) 
 worksheet = workbook.add_worksheet(DateTime.now.year, 45, 15)
-worksheet.print_columns(events)
+
+worksheet.add_event Event.new("P-LR-M-D","2015-11-15","14:00", 60, "Hässelby IK", "Tappströms Bollhall")
+worksheet.add_event Event.new("P-LR-MS-A","2015-11-20","14:15", 60, "Kungsängen IF", "IF Hallen")
+worksheet.add_event Event.new("P-LR-ML-B","2015-11-21","14:30", 60, "Ingarö IF (B)", "Tappströms Bollhall")
+worksheet.add_event Event.new("P-LR-ML-B","2015-11-22","14:45", 60, "Sundbybergs IK (A)", "Eriksdalshallen")
+worksheet.add_event Event.new("P-LR-M-D","2016-01-12","16:00", 60, "Huddinge IBF", "Tappströms Bollhall")
+
+#worksheet.dump
+
+worksheet.print_columns
 
 workbook.close
 
