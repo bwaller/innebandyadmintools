@@ -34,14 +34,22 @@ class Venue
   attr_accessor :name, :streetaddress, :postal_code, :locality, :url
 
   def self.create(url)
+    
     venueshash = Hash.new
+
+    @@predefined_venues.each do |key, venue|
+      venueshash[key] = venue
+    end
+
+    puts "Collecting venue information from " + url
+    puts "This may take some time..."
 
     venuesdoc = Nokogiri::HTML(open(url))
     venues = venuesdoc.css("html body#ctl00_htmlElmBody form#aspnetForm div#MainWrapper div#SiteWrapper div#ctl00_Content div#Center div#MainBody.articlePageBody div p a")
     venues.each do |venue|
       name = venue.content.strip
       venue_url = venue["href"]
-      puts name + " " + venue_url
+#      puts name + " " + venue_url
 
       if @@predefined_venues.has_key?(name) then
         venueshash[name] = @@predefined_venues[name]
@@ -59,11 +67,12 @@ class Venue
 
     end
 
+    puts "Finished. Number of addresses defined: " + venueshash.length.to_s 
     return venueshash
   end
 
   def to_s
-    return @name + " " + @streetaddress + " " + @postal_code + " " + @location + " " + @url
+    return @name + " " + @streetaddress + " " + @postal_code + " " + @locality + " " + @url
   end
  
   def to_ruby
@@ -80,5 +89,5 @@ class Venue
   
 end
 
-Venue.test
+#Venue.test
 
