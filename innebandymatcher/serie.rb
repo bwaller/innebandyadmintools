@@ -54,9 +54,3 @@ class Serie
   end
 end
 
-venues = Venue.create("http://www.innebandy.se/Stockholm/Tavling/Hallforteckning/")
-myserie = Serie.new("myserie", "http://statistik.innebandy.se/ft.aspx?scr=teamresult&flid=484")
-myserie.populate(venues)
-myserie.events.each do |key, event|
-  puts "id " + key.to_s + " " + event.start_time.to_s + " " + event.venue.name + " length: " + event.length.to_s
-end
