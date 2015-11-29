@@ -19,7 +19,8 @@ serie_url = "http://statistik.innebandy.se/ft.aspx?scr=teamresult&flid=484"
 
 venues = Venue.create("http://www.innebandy.se/Stockholm/Tavling/Hallforteckning/")
 
-workbook = WriteExcel.new("test.xls")
+outfile = "sportnik." + DateTime.now.strftime("%Y%m%d_%H%M") + ".xls"
+workbook = WriteExcel.new(outfile)
 worksheet = workbook.add_worksheet
 row = 0
 
