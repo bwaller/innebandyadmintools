@@ -14,9 +14,6 @@ veckodag[6] = "lördag"
 veckodag[7] = "söndag"
 contact_person = "B Waller"
 
-serie_url = ARGV[0]
-serie_url = "http://statistik.innebandy.se/ft.aspx?scr=teamresult&flid=484"
-
 venues = Venue.create("http://www.innebandy.se/Stockholm/Tavling/Hallforteckning/")
 
 outfile = "sportnik." + DateTime.now.strftime("%Y%m%d_%H%M") + ".xls"
@@ -34,29 +31,35 @@ worksheet.write(row, 6, "Startdatum")
 worksheet.write(row, 7, "Stopdatum")
 worksheet.write(row, 8, "Kontakt")
 
-myserie = Serie.new("myserie", serie_url)
-myserie.populate(venues)
-myserie.events.each do |key, event|
+(0...ARGV.length).step(2) do |i| 
+  myserie = Serie.new(ARGV[i],ARGV[i+1])
+  myserie.populate(venues)
+  puts "Creating serie " + myserie.name 
+  myserie.events.each do |key, event|
 
-  row += 1
+    row += 1
 
-  answerdate = event.start_time - 3
-  info = "<p>Matchstart " + event.start_time.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
-  if event.venue.name != "Tappströms Bollhall" 
-    info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
+    answerdate = event.start_time - 3
+    info = "<p>Matchstart " + event.start_time.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
+    if event.venue.name != "Tappströms Bollhall" 
+      info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
+    end
+     
+    info += "<p>"
+    info += "Matchnummer: <a target=\"_blank\" href=\""+ event.url + "\">" + key + "</a><br>"
+    info += "Serie: " + myserie.href 
+    info += "</p>"
+    worksheet.write(row, 0, "Matcher")
+    worksheet.write(row, 1, event.home_team + " vs " + event.away_team)
+    worksheet.write(row, 2, event.venue.name)
+    worksheet.write(row, 3, info)
+    worksheet.write(row, 4, event.start_time.strftime("%H:%M"))
+    worksheet.write(row, 5, event.end_time.strftime("%H:%M"))
+    worksheet.write(row, 6, event.start_time.strftime("%Y-%m-%d"))
+    worksheet.write(row, 7, event.end_time.strftime("%Y-%m-%d"))
+    worksheet.write(row, 8, contact_person)
+
   end
-  
-  info += "Matchnummer: <a target=\"_blank\" href=\"http://statistik.innebandy.se/" + event.url + "\">" + key + "</a>"
-  worksheet.write(row, 0, "Matcher")
-  worksheet.write(row, 1, event.home_team + " vs " + event.away_team)
-  worksheet.write(row, 2, event.venue.name)
-  worksheet.write(row, 3, info)
-  worksheet.write(row, 4, event.start_time.strftime("%H:%M"))
-  worksheet.write(row, 5, event.end_time.strftime("%H:%M"))
-  worksheet.write(row, 6, event.start_time.strftime("%Y-%m-%d"))
-  worksheet.write(row, 7, event.end_time.strftime("%Y-%m-%d"))
-  worksheet.write(row, 8, contact_person)
-
 end
 
 workbook.close

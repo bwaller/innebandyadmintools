@@ -9,17 +9,32 @@ require './venue.rb'
 
 class Serie
 
-  attr_accessor :name, :url, :name, :events
+  attr_accessor :url, :events, :name, :id, :table_url
   
-  def initialize(name, url)
-    @name = name
+  def initialize(url, team)
+    puts url + " " + team
     @url = url
     @events = Hash.new
+    @serie_htmldoc = Nokogiri::HTML(open(url))   
+    src = @serie_htmldoc.at_css("html body#ctl00_htmlElmBody form#aspnetForm div#MainWrapper div#SiteWrapper div.iframe iframe#IdaIframe")["src"]
+    serie_table_htmldoc = Nokogiri::HTML(open(src))
+    @name = serie_table_htmldoc.at_css("html body div#container div#IbisInfo.ibisinfo h1").content.gsub(/^.* - /,"")
+    serie_table_htmldoc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid.clTblStandings.clTblWithFullToggle tbody.clGrid tr a").each do |team_anchor|
+      puts "team_anchor: " + team_anchor
+      if team_anchor.content.match(team) then
+        @id = team_anchor["href"].slice(/[0-9]*$/)
+        @table_url = "http://statistik.innebandy.se/ft.aspx?scr=teamresult&flid=" + @id.to_s
+      end
+    end
+  end
+
+  def href
+    return "<a href=" + @url + ">" + @name + "</a>"
   end
 
   def populate(venues)
-    htmldoc = Nokogiri::HTML(open(url))   
-    records = htmldoc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid tbody.clGrid tr")
+    table_htmldoc = Nokogiri::HTML(open(@table_url))
+    records = table_htmldoc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid tbody.clGrid tr")
     records.each do |record|
       record.css("span").each do |span|
         event_start = DateTime.parse(span.content)
@@ -30,7 +45,7 @@ class Serie
             home_team, away_team = element.content.split(" - ")
             home_team.strip
             away_team.strip
-            url = element["href"]
+            url = "http://statistik.innebandy.se/" + element["href"]
             id = get_id_from_url(url)
           end
           venue = venues[element.content.strip] if element["href"].match("venue")
@@ -42,8 +57,7 @@ class Serie
   end
 
   def get_id_from_url(url)
-    doc_url = "http://statistik.innebandy.se/" + url
-    eventdoc = Nokogiri::HTML(open(doc_url))
+    eventdoc = Nokogiri::HTML(open(url))
     record = eventdoc.css("html body div#container div#IbisInfo.ibisinfo div.clMatchView div.wide-load div#iList div#iSelection div table#iMatchInfo.clCommonGrid tbody tr") 
     record.each do |element|
       if element.content.match("Matchnummer") then
