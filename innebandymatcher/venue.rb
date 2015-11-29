@@ -16,6 +16,7 @@ class Venue
   @@predefined_venues = {
     
     "Björkeby Sporthall" => Venue.new("Björkeby Sporthall", "Brasvägen 2", "175 61", "Järfälla", "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=1240"),
+    "Björkebyhallen" => Venue.new("Björkebyhallen", "Brasvägen 2", "175 61", "Järfälla", "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=1240"),
     "Bodals Bollhall" => Venue.new("Bodals Bollhall", "Bodalsvägen 47", "181 36", "Lidingö", "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=1247"),
     "Ekhammarshallen" => Venue.new("Ekhammarhallen", "Skolvägen 20", "19630", "Kungsängen", "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=1263"),
     "Hammarbackens Sporthall" => Venue.new("Hammarbackshallen", "Ekebyvägen 2", "18334", "Vallentuna", "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=1321"),    
