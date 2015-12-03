@@ -1,0 +1,3 @@
+*.xls
+*.xls#
+Gemfile.lock
