@@ -31,6 +31,14 @@ worksheet.write(row, 6, "Startdatum")
 worksheet.write(row, 7, "Stopdatum")
 worksheet.write(row, 8, "Kontakt")
 
+def get_event_htmlanchor(id, text)
+  return "<a target=\"_blank\" href=\"http://statistik.innebandy.se/ft.aspx?scr=result&fmid=" + id.to_s + "\">" + text + "</a>" 
+end
+
+def get_event_matchtruppanchor(id, text)
+  return "<a href=\"https://ibis.innebandy.se/Fogisforeningklient/Match/MatchTrupp.aspx?matchId=" + id.to_s + "\">" + text + "</a>"
+end
+
 (0...ARGV.length).step(2) do |i| 
   myserie = Serie.new(ARGV[i],ARGV[i+1])
   myserie.populate(venues)
@@ -45,10 +53,9 @@ worksheet.write(row, 8, "Kontakt")
       info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
     end
      
-    info += "<p>"
-    info += "Matchnummer: <a target=\"_blank\" href=\""+ event.url + "\">" + key + "</a><br>"
-    info += "Serie: " + myserie.href 
-    info += "</p>"
+    info += "<p style=\"font-size:12px\"><a " + myserie.href + "</a><br>"
+    info += "Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) + "<br>"
+    info += get_event_matchtruppanchor(event.id, "Ibis matchtrupp") + "</p>"
     worksheet.write(row, 0, "Matcher")
     worksheet.write(row, 1, event.home_team + " vs " + event.away_team)
     worksheet.write(row, 2, event.venue.name)
@@ -63,3 +70,4 @@ worksheet.write(row, 8, "Kontakt")
 end
 
 workbook.close
+puts "Open created document with", "soffice --calc " +  outfile

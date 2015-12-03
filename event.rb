@@ -4,15 +4,16 @@ require 'date'
 
 class Event
 
-  attr_accessor :start_time, :end_time, :home_team, :away_team, :venue, :url
+  attr_accessor :start_time, :end_time, :home_team, :away_team, :venue, :id, :number
 
-  def initialize(start_time, end_time, home_team, away_team, venue, url, is_home)
+  def initialize(start_time, end_time, home_team, away_team, venue, id, number, is_home)
     @start_time = start_time
     @end_time = end_time
     @home_team = home_team
     @away_team = away_team
     @venue = venue
-    @url = url
+    @id = id
+    @number = number
     @is_home = is_home
   end
 
