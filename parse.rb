@@ -14,8 +14,6 @@ veckodag[6] = "lördag"
 veckodag[7] = "söndag"
 contact_person = "B Waller"
 
-venues = Venue.create("http://www.innebandy.se/Stockholm/Tavling/Hallforteckning/")
-
 outfile = "sportnik." + DateTime.now.strftime("%Y%m%d_%H%M") + ".xls"
 workbook = WriteExcel.new(outfile)
 worksheet = workbook.add_worksheet
@@ -41,7 +39,7 @@ end
 
 (0...ARGV.length).step(2) do |i| 
   myserie = Serie.new(ARGV[i],ARGV[i+1])
-  myserie.populate(venues)
+  myserie.populate
   puts "Creating serie " + myserie.name 
   myserie.events.each do |key, event|
 

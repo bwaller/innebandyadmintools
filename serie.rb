@@ -11,8 +11,8 @@ class Serie
 
   attr_accessor :url, :events, :name, :id, :table_url
   
-  def initialize(url, team)
-    puts url + " " + team
+  def initialize(url, _team)
+    team = _team.gsub(/[()]/,".")
     @url = url
     @events = Hash.new
     @serie_htmldoc = Nokogiri::HTML(open(url))   
@@ -31,7 +31,7 @@ class Serie
     return "<a href=" + @url + ">" + @name + "</a>"
   end
 
-  def populate(venues)
+  def populate
     table_htmldoc = Nokogiri::HTML(open(@table_url))
     records = table_htmldoc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid tbody.clGrid tr")
     records.each do |record|
@@ -48,8 +48,8 @@ class Serie
             event_id = url.match(/[0-9]*$/).to_s.to_i
             event_number = get_number_from_url(url)
           end
-          venue = venues[element.content.strip] if element["href"].match("venue")
-          puts "No venue information for " + element.content.strip if !venue
+          venue = Venue.getvenue(element["href"].slice(/[0-9]*$/).to_i) if element["href"].match("venue")
+          puts "No venue information for " + venue_id.to_s if !venue
         end
         @events[event_number] = Event.new(event_start, event_start + Rational(1,24), home_team, away_team, venue, event_id, event_number, true)
       end  
