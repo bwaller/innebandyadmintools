@@ -37,8 +37,8 @@ def get_event_matchtruppanchor(id, text)
   return "<a href=\"https://ibis.innebandy.se/Fogisforeningklient/Match/MatchTrupp.aspx?matchId=" + id.to_s + "\">" + text + "</a>"
 end
 
-(0...ARGV.length).step(2) do |i| 
-  myserie = Serie.new(ARGV[i],ARGV[i+1])
+ARGV.each do |argv| 
+  myserie = Serie.new(argv.to_i)
   myserie.populate
   puts "Creating serie " + myserie.name 
   myserie.events.each do |key, event|
