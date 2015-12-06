@@ -13,6 +13,7 @@ require './person.rb'
 class Team
 
   @@team_base_url = Event.stats_base_url  + "ft.aspx?flid="
+  @@team_events_base_url = Event.stats_base_url  + "ft.aspx?scr=teamresult&flid="
   
   attr_accessor :id, :url, :name, :club, :dress_colors, :serie, :contact_person, :events
   
@@ -33,7 +34,7 @@ class Team
     end  
     @serie = Serie.new(serie_id)
     @contact_person = Person.new(contact_person_id)
-    #@events = populate_events
+    @events = Array.new
   end
 
   def href
@@ -41,45 +42,22 @@ class Team
   end
 
   def populate_events
-    table_htmldoc = Nokogiri::HTML(open(@table_url))
-    records = table_htmldoc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid tbody.clGrid tr")
-    records.each do |record|
-      record.css("span").each do |span|
-        event_start = DateTime.parse(span.content)
-        url, home_team, away_team = ""
-        venue, event_id, event_number = 0
-        record.css("a").each do |element|
-          if element["href"].match("result") and !element["class"]  then
-            home_team, away_team = element.content.split(" - ")
-            home_team.strip
-            away_team.strip
-            url = "http://statistik.innebandy.se/" + element["href"]
-            event_id = url.match(/[0-9]*$/).to_s.to_i
-            event_number = get_number_from_url(url)
-          end
-          venue = Venue.getvenue(element["href"].slice(/[0-9]*$/).to_i) if element["href"].match("venue")
-          puts "No venue information for " + venue_id.to_s if !venue
-        end
-        @events[event_number] = Event.new(event_start, event_start + Rational(1,24), home_team, away_team, venue, event_id, event_number, true)
-      end  
-    end
-  end
-
-  def get_number_from_url(url)
-    eventdoc = Nokogiri::HTML(open(url))
-    record = eventdoc.css("html body div#container div#IbisInfo.ibisinfo div.clMatchView div.wide-load div#iList div#iSelection div table#iMatchInfo.clCommonGrid tbody tr") 
-    record.each do |element|
-      if element.content.match("Matchnummer") then
-        return element.search("td").to_a[1].content.to_i
+    events_url = @@team_events_base_url + @id.to_s
+    puts "Populate: " + events_url
+    events_html = Nokogiri::HTML(open(events_url))
+    events_html.css("a").each do |anchor|
+      event_id = anchor["href"].match(/[0-9]*$/).to_s.to_i if anchor["href"].match(/fmid/) && !anchor["class"]
+      if event_id then 
+        puts "New event: " + event_id.to_s
+        event = Event.new(event_id, @id, @serie)
+        @events.push(event) 
       end
     end
-    return -1
   end
-  
+ 
   def to_s
     return @id.to_s + " " + @name + " " + @dress_colors 
   end
 
 end
 
-puts Team.new(ARGV[0].to_i)

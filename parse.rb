@@ -3,6 +3,7 @@
 require 'date'
 require 'writeexcel'
 require "./serie.rb"
+require "./team.rb"
 
 veckodag = Array.new(7)
 veckodag[1] = "måndag"
@@ -38,24 +39,24 @@ def get_event_matchtruppanchor(id, text)
 end
 
 ARGV.each do |argv| 
-  myserie = Serie.new(argv.to_i)
-  myserie.populate
-  puts "Creating serie " + myserie.name 
-  myserie.events.each do |key, event|
+  myteam = Team.new(argv.to_i)
+  myteam.populate_events
+  puts "Creating serie " + myteam.serie.name 
+  myteam.events.each do |event|
 
     row += 1
 
     answerdate = event.start_time - 3
     info = "<p>Matchstart " + event.start_time.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
-    if event.venue.name != "Tappströms Bollhall" 
+    if event.is_away? 
       info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
     end
      
-    info += "<p style=\"font-size:12px\"><a " + myserie.href + "</a><br>"
+    info += "<p style=\"font-size:12px\"><a " + myteam.serie.href + "</a><br>"
     info += "Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) + "<br>"
     info += get_event_matchtruppanchor(event.id, "Ibis matchtrupp") + "</p>"
     worksheet.write(row, 0, "Matcher")
-    worksheet.write(row, 1, event.home_team + " vs " + event.away_team)
+    worksheet.write(row, 1, event.home_team.name + " vs " + event.away_team.name)
     worksheet.write(row, 2, event.venue.name)
     worksheet.write(row, 3, info)
     worksheet.write(row, 4, event.start_time.strftime("%H:%M"))
