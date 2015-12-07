@@ -52,9 +52,13 @@ ARGV.each do |argv|
       info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=Ekerö Centrum&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
     end
      
-    info += "<p style=\"font-size:12px\"><a " + myteam.serie.href + "</a><br>"
-    info += "Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) + "<br>"
-    info += get_event_matchtruppanchor(event.id, "Ibis matchtrupp") + "</p>"
+    info += "<p style=\"font-size:12px\"><a " + myteam.serie.href + "</a>"
+    info += "<br>Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) 
+    info += "<br>"+get_event_matchtruppanchor(event.id, "Ibis matchtrupp") 
+    if event.is_away? then
+      info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
+    end
+    info += "</p>"
     worksheet.write(row, 0, "Matcher")
     worksheet.write(row, 1, event.home_team.name + " vs " + event.away_team.name)
     worksheet.write(row, 2, event.venue.name)
