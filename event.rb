@@ -19,7 +19,6 @@ class Event
       @home_team = Team.new (home_team_id)
       @away_team = Team.new (away_team_id)
       team_id == home_team_id ? @is_home = true : @is_home = false  
-      puts "Team_id: " + team_id.to_s + " " + home_team_id.to_s + " " + @is_home.to_s
     end
     
     venue_id = 0
