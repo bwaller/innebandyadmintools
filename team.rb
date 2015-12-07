@@ -29,6 +29,7 @@ class Team
       serie_id = anchor.attribute('href').value.match(/[0-9]*$/).to_s.to_i if anchor.attribute('href').value.match(/ftid/)
     end 
     @club = Club.new(club_id)
+    @dress_colors = "Dress colors not found"
     html.css('dt').each do |dt|
       @dress_colors = dt.next_element.content.to_s if dt.content.match(/Färger/)
     end  
