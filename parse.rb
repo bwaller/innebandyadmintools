@@ -13,7 +13,7 @@ veckodag[4] = "onsdag" #Om matchen spelas en söndag är svarsdag ändå onsdag
 veckodag[5] = "fredag"
 veckodag[6] = "lördag"
 veckodag[7] = "söndag"
-contact_person = "B Waller"
+contact_person = "void"
 
 outfile = "sportnik." + DateTime.now.strftime("%Y%m%d_%H%M") + ".xls"
 workbook = WriteExcel.new(outfile)
