@@ -11,15 +11,22 @@ class Club
 
   @@base_url = Event.stats_base_url + "ft.aspx?feid=" 
   
-  attr_accessor :id, :name, :url, :number, :district
+  attr_accessor :id, :name, :url, :number, :district, :address
   
   def initialize(id)
     @id = id.to_i
     @url = @@base_url + @id.to_s
     html = Nokogiri::HTML(open(@url))
-    @name = html.at_xpath("/html/body/div[2]/div[1]/div/h1").content
-    district_id = html.at_xpath("/html/body/div[2]/div[1]/div/div[1]/dl/dd[6]/a")["href"].match(/[0-9]*$/).to_s.to_i
-    @number = html.at_xpath("/html/body/div[2]/div[1]/div/div[1]/dl/dd[1]").content
+    puts @url
+    @name = html.at_xpath("/html/body/div[2]/div[1]/div/h1").content.to_s
+    district_id = 0
+    html.css("html body div#container div#IbisInfo.ibisinfo div.clFogis div#iList dl").each do |dl|
+      dl.css("dt").each do |dt|
+        @number = dt.next_element.content.to_s.to_i if dt.content.match(/Föreningsnummer/)  
+        @address = dt.next_element.content.to_s.strip if dt.content.match(/Adress/)  
+        district_id = dt.next_element.child["href"].match(/[0-9]*$/).to_s.to_i if dt.content.match(/Förbund/)
+      end
+    end
     @district = District.new(district_id)
   end
 
@@ -28,7 +35,7 @@ class Club
   end
 
   def to_s
-    return @id.to_s + " " + @name + " " + @number + " " + @url
+    return @id.to_s + " " + @number.to_s + " " + @name + " " + @url + " " + @address + " " + @district.name
   end
 end
 
