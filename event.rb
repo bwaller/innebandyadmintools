@@ -26,12 +26,12 @@ class Event
       tbody.css("td").each do |td|
         @number = td.next_element.content if td.content.match(/Matchnummer/)
         @start_time = DateTime.parse(td.next_element.content) if td.content.match(/Tid/)
-        venue_id = td.next_element.child["href"].match(/[0-9]*$/) if td.content.match(/Spelplats/)
+        venue_id = td.next_element.child["href"].match(/[0-9]*$/).to_s.to_i if td.content.match(/Spelplats/)
       end 
     end 
     @serie = serie
     @end_time = @start_time + Rational(length_m,24*60)
-    @venue = Venue.getvenue(venue_id)
+    @venue = Venue.new(venue_id)
   end
 
   def is_home?

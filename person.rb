@@ -4,7 +4,9 @@
 require 'date'
 require 'nokogiri'
 require 'open-uri'
+require 'json'
 require './event.rb'
+require './cache.rb'
 
 class Person
 
@@ -12,34 +14,48 @@ class Person
   
   attr_accessor :id, :name, :url, :email, :cell_phone, :address
   
+  def to_json
+    return [@name, @address, @email, @cell_phone, @url].to_json
+  end
+
   def initialize(id)
-    @id = id.to_i
-    @url = @@base_url + @id.to_s
-    html = Nokogiri::HTML(open(@url))
-    tmp = html.at_xpath("/html/body/div[2]/div[1]/div/h1")
-    if tmp then
-      @name = tmp.content
+    @id = id
+    if json_str = Cache.get(Cache.key(self)) then
+      array = JSON.parse(json_str)
+      @name = array[0]
+      @address = array[1]
+      @email = array[2]
+      @cell_phone = array[3]
+      @url = array[4]
     else
-      @name, @address, @email, @cell_phone = "UNDEFINED" 
+      @url = @@base_url + @id.to_s
+      html = Nokogiri::HTML(open(@url))
+      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/h1")
+      if tmp then
+        @name = tmp.content
+      else
+        @name, @address, @email, @cell_phone = "UNDEFINED" 
+      end
+      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[1]")
+      if tmp then 
+        @address = tmp.content 
+      else
+        @address = "UNDEFINED"
+      end 
+      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[3]/a")
+      if tmp then 
+        @email = tmp.content
+      else
+        @email = "UNDEFINED"
+      end
+      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[2]")
+      if tmp then
+        @cell_phone = tmp.content
+      else
+        @cell_phone = "UNDEFINED"
+      end 
+      Cache.set(self)
     end
-    tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[1]")
-    if tmp then 
-      @address = tmp.content 
-    else
-      @address = "UNDEFINED"
-    end 
-    tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[3]/a")
-    if tmp then 
-      @email = tmp.content
-    else
-      @email = "UNDEFINED"
-    end
-    tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[2]")
-    if tmp then
-      @cell_phone = tmp.content
-    else
-      @cell_phone = "UNDEFINED"
-    end 
   end
 
   def href
@@ -49,6 +65,7 @@ class Person
   def to_s
     return @id.to_s + " " + @name + " "+ @address + " "+ @email + " "+ @cell_phone + " "+ @url.to_s
   end
+
 end
 
 #puts Person.new(ARGV[0].to_i)

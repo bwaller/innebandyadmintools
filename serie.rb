@@ -4,8 +4,10 @@
 require 'date'
 require 'nokogiri'
 require 'open-uri'
+require 'json'
 require './event.rb'
 require './district.rb'
+require './cache.rb'
 
 class Serie
 
@@ -13,13 +15,25 @@ class Serie
   
   attr_accessor :id, :name, :url, :district
   
+  def to_json
+    return [@name, @url, @district.id].to_json
+  end
+
   def initialize(id)
-    @id = id.to_i
-    @url = @@base_url + @id.to_s
-    html = Nokogiri::HTML(open(@url))
-    @name = html.at_xpath("/html/body/div[2]/div[1]/h1").content.gsub(/Tabell och resultat - /,"")
-    district_id = html.at_xpath("/html/body/div[2]/div[1]/ul/li[4]/a")["href"].match(/[0-9]*$/).to_s.to_i
-    @district = District.new(district_id)
+    @id = id
+    if json_str = Cache.get(Cache.key(self)) then
+      array = JSON.parse(json_str)
+      @name = array[0]
+      @url = array[1]
+      @district = District.new(array[2])
+    else
+      @url = @@base_url + @id.to_s
+      html = Nokogiri::HTML(open(@url))
+      @name = html.at_xpath("/html/body/div[2]/div[1]/h1").content.gsub(/Tabell och resultat - /,"")
+      district_id = html.at_xpath("/html/body/div[2]/div[1]/ul/li[4]/a")["href"].match(/[0-9]*$/).to_s.to_i
+      @district = District.new(district_id)
+      Cache.set(self)
+    end
   end
 
   def href

@@ -9,7 +9,7 @@ end
 
 
 (start_id..stop_id).each do |id|
-  if venue = Venue.getvenue(id) then
+  if venue = Venue.new(id) then
     puts id.to_s + " " + venue.to_s
   end
 end

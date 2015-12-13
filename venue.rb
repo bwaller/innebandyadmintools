@@ -2,20 +2,21 @@
 
 require 'nokogiri'
 require 'open-uri'
-require "redis"
 require 'json'
-
-@@redis = Redis.new
+require './cache.rb'
 
 class Venue
 
   attr_accessor :id, :name, :streetaddress, :postal_code, :locality
 
+  def to_json
+    return [@name, @streetaddress, @postal_code, @locality].to_json
+  end
+
   def initialize (id)
 
     @id = id
-    key = Venue.key(@id)
-    if json_str = @@redis.get(key) then
+    if json_str = Cache.get(Cache.key(self)) then
       array = JSON.parse(json_str)
       @name = array[0]
       @streetaddress = array[1]
@@ -44,18 +45,9 @@ class Venue
       else 
         @locality = "LOCALITY_UNDEFINED"
       end
-      Venue.set(@id, @name, @streetaddress, @postal_code, @locality)
+      Cache.set(self)
     end 
-  end
-  
-  def self.set(id, name, streetaddress, postal_code, locality)
-    json_str = [name, streetaddress, postal_code, locality].to_json
-    @@redis.set self.key(id), json_str
-  end
-
-  def self.key(id)
-    return key = self.class.to_s+id.to_s
-  end
+  end  
 
   def to_s
     return @name + " " + @streetaddress + " " + @postal_code + " " + @locality 
