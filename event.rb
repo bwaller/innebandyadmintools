@@ -18,8 +18,8 @@ class Event
     event_html = Nokogiri::HTML(open(@url))
     node_set = event_html.css('td:contains("Laguppställning")') 
     if node_set.to_a.length > 0
-      puts node_set.to_a[0].content.gsub("Laguppställning","").strip
-      puts node_set.to_a[1].content.gsub("Laguppställning","").strip
+#      puts node_set.to_a[0].content.gsub("Laguppställning","").strip
+#      puts node_set.to_a[1].content.gsub("Laguppställning","").strip
     end
 
     event_html.css("//table.clTblMatchStanding").each do |table|
