@@ -32,16 +32,25 @@ class Club
     else 
       @url = @@base_url + @id.to_s
       html = Nokogiri::HTML(open(@url))
-      @name = html.at_xpath("/html/body/div[2]/div[1]/div/h1").content.to_s
+      @name = html.at('//h1').content.to_s
+
+      elem = html.at('dt:contains("Föreningsnummer")')
+      if elem
+        @number = elem.next_element.content.to_s.to_i 
+      end
+
+      elem = html.at('dt:contains("Adress")')
+      if elem
+        @address = elem.next_element.content.to_s.strip 
+      end
+
       district_id = 0
-      html.css("html body div#container div#IbisInfo.ibisinfo div.clFogis div#iList dl").each do |dl|
-        dl.css("dt").each do |dt|
-          @number = dt.next_element.content.to_s.to_i if dt.content.match(/Föreningsnummer/)  
-          @address = dt.next_element.content.to_s.strip if dt.content.match(/Adress/)  
-          district_id = dt.next_element.child["href"].match(/[0-9]*$/).to_s.to_i if dt.content.match(/Förbund/)
-        end
+      elem = html.at('dt:contains("Förbund")')
+      if elem
+        district_id = elem.next_element.child["href"].match(/[0-9]*$/).to_s.to_i
       end
       @district = District.new(district_id)
+
       Cache.set(self)
     end
   end
