@@ -30,30 +30,35 @@ class Person
     else
       @url = @@base_url + @id.to_s
       html = Nokogiri::HTML(open(@url))
-      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/h1")
-      if tmp then
-        @name = tmp.content
+
+      elem = html.at("//h1")
+      if elem then
+        @name = elem.content
       else
         @name, @address, @email, @cell_phone = "UNDEFINED" 
       end
-      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[1]")
-      if tmp then 
-        @address = tmp.content 
+
+      elem = html.at('dt:contains("Adress")')
+      if elem then 
+        @address = elem.next_element.content 
       else
         @address = "UNDEFINED"
       end 
-      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[3]/a")
-      if tmp then 
-        @email = tmp.content
+
+      elem = html.at('dt:contains("E-post")')
+      if elem then 
+        @email = elem.next_element.content
       else
         @email = "UNDEFINED"
       end
-      tmp = html.at_xpath("/html/body/div[2]/div[1]/div/dl/dd[2]")
-      if tmp then
-        @cell_phone = tmp.content
+
+      elem = html.at('dt:contains("Telefon mobil")')
+      if elem then
+        @cell_phone = elem.next_element.content
       else
         @cell_phone = "UNDEFINED"
       end 
+
       Cache.set(self)
     end
   end
