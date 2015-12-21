@@ -66,7 +66,7 @@ class Team
     events_html.css("a").each do |anchor|
       event_id = anchor["href"].match(/[0-9]*$/).to_s.to_i if anchor["href"].match(/fmid/) && !anchor["class"]
       if event_id then 
-        puts "New event: " + event_id.to_s
+#        puts "New event: " + event_id.to_s
         event = Event.new(event_id, @id, @serie)
         @events.push(event) 
       end

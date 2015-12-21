@@ -46,28 +46,44 @@ ARGV.each do |argv|
 
     row += 1
 
-    answerdate = event.start_time - 3
-    info = "<p>Matchstart " + event.start_time.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
-    if event.is_away? 
-      source_address = event.away_team.club.address.match(/[[:alpha:]]*$/).to_s
-      info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
-    end
+    heading = "Event with id " + event.id.to_s + " is not defined"
+    info = "Something went wrong creating this event. You might try to regenerate this team, otherwise delete this event before importing. Url is " + event.url
+    venue_name, event_start_clock, event_end_clock, event_start_date, event_end_date = ""
+
+    if event.is_valid? then
+      heading = event.home_team.name + " vs " + event.away_team.name
+      venue_name = event.venue.name
+      answerdate = event.start_time - 3
+      info = "<p>Matchstart " + event.start_time.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
+      if event.is_away? && event.away_team
+        source_address = event.away_team.club.address.match(/[[:alpha:]]*$/).to_s
+        info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
+      end
      
-    info += "<p style=\"font-size:12px\"><a " + myteam.serie.href + "</a>"
-    info += "<br>Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) 
-    info += "<br>"+get_event_matchtruppanchor(event.id, "Ibis matchtrupp") 
-    if event.is_away? then
-      info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
+      info += "<p style=\"font-size:12px\"><a " + myteam.serie.href + "</a>"
+      info += "<br>Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) 
+      info += "<br>"+get_event_matchtruppanchor(event.id, "Ibis matchtrupp") 
+      if event.is_away? then
+        info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
+      end
+      info += "</p>"
+  
+      event_start_clock = event.start_time.strftime("%H:%M")
+      event_end_clock = event.end_time.strftime("%H:%M")
+      event_start_date = event.start_time.strftime("%Y-%m-%d")
+      event_end_date = event.end_time.strftime("%Y-%m-%d")
+    else
+      puts "Event with id " + event.id.to_s + " is invalid"
     end
-    info += "</p>"
+
     worksheet.write(row, 0, "Matcher")
-    worksheet.write(row, 1, event.home_team.name + " vs " + event.away_team.name)
-    worksheet.write(row, 2, event.venue.name)
+    worksheet.write(row, 1, heading)
+    worksheet.write(row, 2, venue_name)
     worksheet.write(row, 3, info)
-    worksheet.write(row, 4, event.start_time.strftime("%H:%M"))
-    worksheet.write(row, 5, event.end_time.strftime("%H:%M"))
-    worksheet.write(row, 6, event.start_time.strftime("%Y-%m-%d"))
-    worksheet.write(row, 7, event.end_time.strftime("%Y-%m-%d"))
+    worksheet.write(row, 4, event_start_clock)
+    worksheet.write(row, 5, event_end_clock)
+    worksheet.write(row, 6, event_start_date)
+    worksheet.write(row, 7, event_end_date)
     worksheet.write(row, 8, contact_person)
 
   end
