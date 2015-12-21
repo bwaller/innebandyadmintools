@@ -27,7 +27,7 @@ class District
     else
       @url = @@base_url + @id.to_s
       html = Nokogiri::HTML(open(@url))
-      @name = html.at_xpath("/html/body/div[2]/div[1]/div/h1").content
+      @name = html.at("//h1").content
       Cache.set(self)      
     end
   end
