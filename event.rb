@@ -12,10 +12,17 @@ class Event
   def initialize(id, team_id, serie, length_m = 60)
     @id = id
     @url = @@event_base_url + id.to_s
+    @serie = serie
     #puts "Event: " + @url  
     @is_valid = false
     event_html = Nokogiri::HTML(open(@url))
-    event_html.css("html body div#container div#IbisInfo.ibisinfo div.clMatchView div.wide-load div#iList table.clTblMatchStanding").each do |table|
+    node_set = event_html.css('td:contains("Laguppställning")') 
+    if node_set.to_a.length > 0
+      puts node_set.to_a[0].content.gsub("Laguppställning","").strip
+      puts node_set.to_a[1].content.gsub("Laguppställning","").strip
+    end
+
+    event_html.css("//table.clTblMatchStanding").each do |table|
       @is_valid = true
       home_team_id = table.css("a")[0]["href"].match(/[0-9]*$/).to_s.to_i
       away_team_id = table.css("a")[1]["href"].match(/[0-9]*$/).to_s.to_i
@@ -24,21 +31,29 @@ class Event
       team_id == home_team_id ? @is_home = true : @is_home = false  
     end
     
-    @number = 0
-    start_time_str = "1970-01-01"
     venue_id = 0
-    event_html.css("html body div#container div#IbisInfo.ibisinfo div.clMatchView div.wide-load div#iList div#iSelection div table#iMatchInfo.clCommonGrid tbody").each do |tbody|
-      tbody.css("td").each do |td|
-        @number = td.next_element.content if td.content.match(/Matchnummer/)
-        start_time_str = td.next_element.content if td.content.match(/Tid/) && td.next_element.content.match(/./)
-        venue_id = td.next_element.child["href"].match(/[0-9]*$/).to_s.to_i if td.content.match(/Spelplats/)
-      end 
-    end 
-    @serie = serie
+    elem = event_html.at('td:contains("Spelplats")')
+    if elem
+      venue_id = elem.next_element.child["href"].match(/[0-9]*$/).to_s.to_i 
+      @venue = Venue.new(venue_id)
+    else
+      @venue = nil  
+    end
+
+    @number = 0
+    elem = event_html.at('td:contains("Matchnummer")')
+    if elem 
+      @number = elem.next_element.content
+    end
+
+    start_time_str = "1970-01-01"
+    elem = event_html.at('td:contains("Tid")')
+    if elem && elem.next_element && elem.next_element.content.match(/./)
+      start_time_str = elem.next_element.content
+    end                  
     @start_time = DateTime.parse (start_time_str)
     @end_time = @start_time + Rational(length_m,24*60)
     @is_valid = false if (@start_time.year == 1970)
-    @venue = Venue.new(venue_id)
   end
 
   def is_valid?
