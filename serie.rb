@@ -21,7 +21,6 @@ class Serie
   end
 
   def initialize(id)
-    puts "Serie: " + id.to_s
     @id = id
     @teams = Hash.new
     if json_str = Cache.get(Cache.key(self)) then
@@ -32,14 +31,13 @@ class Serie
     else
       @url = @@base_url + @id.to_s
       html = Nokogiri::HTML(open(@url))
-      @name = html.at("//h1").content.gsub(/Tabell och resultat - /,"")
+      @name = html.at("//h1").content.gsub(/Tabell och resultat - /,"").gsub(/Spelprogram - /,"")
       district_id = html.at("/html/body/div[2]/div[1]/ul/li[4]/a")["href"].match(/[0-9]*$/).to_s.to_i
       @district = District.new(district_id)
       Cache.set(self)
     end
     html = Nokogiri::HTML(open(@url))
-    html.css('html body div#container div#IbisInfo.ibisinfo table.clCommonGrid.clTblStandings.clTblWithFullToggle a').each do |team|
-      #puts team["href"].match(/[0-9]*$/).to_s + " " + team.content
+    html.css('html body div#container div#IbisInfo.ibisinfo').css('a').each do |team|
       @teams[team.content] = team["href"].match(/[0-9]*$/).to_s.to_i
     end
   end
