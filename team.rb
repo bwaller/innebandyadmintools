@@ -25,13 +25,15 @@ class Team
   
   def initialize(id)
     @id = id
+    puts "New team: "+ id.to_s
     if json_str = Cache.get(Cache.key(self)) then
       array = JSON.parse(json_str)
       @name = array[0]
       @url = array[1]
       @dress_colors = array[2]
       @club = Club.new(array[3])
-      @serie = Serie.new(array[4])
+      puts "Team wants serie "  + array[4].to_s
+      @serie = Serie.get_serie(array[4])
       @contact_person = Person.new(array[5])
       @events = Array.new
     else
@@ -49,7 +51,8 @@ class Team
       html.css('dt').each do |dt|
         @dress_colors = dt.next_element.content.to_s if dt.content.match(/Färger/)
       end  
-      @serie = Serie.new(serie_id)
+      puts "Team wants serie "  + serie_id.to_s
+      @serie = Serie.get_serie(serie_id)
       @contact_person = Person.new(contact_person_id)
       @events = Array.new
       Cache.set(self)
@@ -66,7 +69,6 @@ class Team
     events_html.css("a").each do |anchor|
       event_id = anchor["href"].match(/[0-9]*$/).to_s.to_i if anchor["href"].match(/fmid/) && !anchor["class"]
       if event_id then 
-#        puts "New event: " + event_id.to_s
         event = Event.new(event_id, @id, @serie)
         @events.push(event) 
       end

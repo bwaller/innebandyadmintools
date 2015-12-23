@@ -18,19 +18,14 @@ class Event
     event_html = Nokogiri::HTML(open(@url))
     node_set = event_html.css('td:contains("Laguppställning")') 
     if node_set.to_a.length > 0
-#      puts node_set.to_a[0].content.gsub("Laguppställning","").strip
-#      puts node_set.to_a[1].content.gsub("Laguppställning","").strip
-    end
-
-    event_html.css("//table.clTblMatchStanding").each do |table|
       @is_valid = true
-      home_team_id = table.css("a")[0]["href"].match(/[0-9]*$/).to_s.to_i
-      away_team_id = table.css("a")[1]["href"].match(/[0-9]*$/).to_s.to_i
+      home_team_id = @serie.teams[node_set.to_a[0].content.gsub("Laguppställning","").strip]
+      away_team_id = @serie.teams[node_set.to_a[1].content.gsub("Laguppställning","").strip]
       @home_team = Team.new (home_team_id)
       @away_team = Team.new (away_team_id)
       team_id == home_team_id ? @is_home = true : @is_home = false  
     end
-    
+
     venue_id = 0
     elem = event_html.at('td:contains("Spelplats")')
     if elem
