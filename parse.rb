@@ -68,7 +68,7 @@ ARGV.each do |argv|
       end
       info += "</p>"
   
-      event_start_clock = event.start_time.strftime("%H:%M")
+      event_start_clock = (event.start_time-Rational(45,24*60)).strftime("%H:%M")
       event_end_clock = event.end_time.strftime("%H:%M")
       event_start_date = event.start_time.strftime("%Y-%m-%d")
       event_end_date = event.end_time.strftime("%Y-%m-%d")
