@@ -40,6 +40,17 @@ class Event
     if elem 
       @number = elem.next_element.content
     end
+    if @number == 0 then
+      serie_html = Nokogiri::HTML(open(@serie.url))
+      number = serie_html.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid tbody.clGrid tr").each do |tr|
+        #puts tr.children.to_a[5] if tr.children.to_a[5].["href"].match(/125930/)
+        #puts tr.children.to_a[5] 
+        #puts "start "+tr.class.to_s, tr.element_children.to_a.length?, "end"
+        if tr.element_children.length == 6 then
+          @number = tr.element_children[2].child.content if tr.element_children[2].child["href"].match(@id.to_s)
+        end
+      end
+    end
 
     start_time_str = "1970-01-01"
     elem = event_html.at('td:contains("Tid")')
