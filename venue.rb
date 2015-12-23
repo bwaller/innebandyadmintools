@@ -7,10 +7,10 @@ require './cache.rb'
 
 class Venue
 
-  attr_accessor :id, :name, :streetaddress, :postal_code, :locality
+  attr_accessor :id, :name, :url, :streetaddress, :postal_code, :locality
 
   def to_json
-    return [@name, @streetaddress, @postal_code, @locality].to_json
+    return [@name, @url, @streetaddress, @postal_code, @locality].to_json
   end
 
   def initialize (id)
@@ -19,14 +19,15 @@ class Venue
     if json_str = Cache.get(Cache.key(self)) then
       array = JSON.parse(json_str)
       @name = array[0]
-      @streetaddress = array[1]
-      @postal_code = array[2]
-      @locality = array[3]
+      @url = array[1]
+      @streetaddress = array[2]
+      @postal_code = array[3]
+      @locality = array[4]
     else
-      venue_url = "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=" + id.to_s
-      venue_doc = Nokogiri::HTML(open(venue_url))
+      @url = "http://statistik.innebandy.se/ft.aspx?scr=venue&faid=" + id.to_s
+      venue_doc = Nokogiri::HTML(open(@url))
       if !element = venue_doc.at_css("html body div#container div#IbisInfo.ibisinfo div.clFogis h1") then
-        puts "Url " + venue_url + " returned empty document"
+        puts "Url " + @url + " returned empty document"
         return nil
       end
       @name = element.content

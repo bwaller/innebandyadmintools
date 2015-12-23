@@ -66,6 +66,7 @@ ARGV.each do |argv|
       if event.is_away? then
         info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
       end
+      info += "<br>Spelschema för <a href=\"" + event.venue.url + "\">" + venue_name + "</a>"  
       info += "</p>"
   
       event_start_clock = (event.start_time-Rational(45,24*60)).strftime("%H:%M")
