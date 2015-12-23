@@ -40,8 +40,8 @@ end
 
 ARGV.each do |argv| 
   myteam = Team.new(argv.to_i)
+  puts "Creating serie " + myteam.serie.name
   myteam.populate_events
-  puts "Creating serie " + myteam.serie.name 
   myteam.events.each do |event|
 
     row += 1
@@ -60,8 +60,8 @@ ARGV.each do |argv|
         info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
       end
      
-      info += "<p style=\"font-size:12px\"><a " + myteam.serie.href + "</a>"
-      info += "<br>Matchnumer: " + get_event_htmlanchor(event.id, event.number.to_s) 
+      info += "<p style=\"font-size:12px\">" + myteam.serie.href 
+      info += "<br>Matchnummer: " + get_event_htmlanchor(event.id, event.number.to_s) 
       info += "<br>"+get_event_matchtruppanchor(event.id, "Ibis matchtrupp") 
       if event.is_away? then
         info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
