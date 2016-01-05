@@ -3,7 +3,9 @@ require 'sinatra'
 set :bind, '0.0.0.0'
  
 get '/generate' do
-  result_file = `/usr/bin/ruby parse.rb 479`.split(" ").last
+  team_id=params['team_id'].gsub("+"," ")
+  command = "/usr/bin/ruby parse.rb " + team_id
+  result_file = `#{command}`.split(" ").last
   send_file result_file, :filename => result_file, :type => 'Application/octet-stream' 
 end
 
