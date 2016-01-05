@@ -1,6 +1,7 @@
 require 'sinatra'
 
 set :bind, '0.0.0.0'
+#set :port, 80
  
 get '/generate' do
   team_id=params['team_id'].gsub("+"," ")
