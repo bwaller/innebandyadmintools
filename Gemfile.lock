@@ -33,6 +33,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler (= 1.11.2)
   nokogiri
   redis (~> 3.2)
   sinatra
