@@ -17,7 +17,7 @@ class Event
     @is_valid = false
     event_html = Nokogiri::HTML(open(@url))
     node_set = event_html.css('td:contains("Laguppställning")') 
-    if node_set.to_a.length > 0
+    if node_set.to_a.length == 2
       @is_valid = true
       home_team_id = @serie.teams[node_set.to_a[0].content.gsub("Laguppställning","").strip]
       away_team_id = @serie.teams[node_set.to_a[1].content.gsub("Laguppställning","").strip]

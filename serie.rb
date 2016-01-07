@@ -32,13 +32,13 @@ class Serie
       @url = @@base_url + @id.to_s
       html = Nokogiri::HTML(open(@url))
       @name = html.at("//h1").content.gsub(/Tabell och resultat - /,"").gsub(/Spelprogram - /,"")
-      district_id = html.at("/html/body/div[2]/div[1]/ul/li[4]/a")["href"].match(/[0-9]*$/).to_s.to_i
+      district_id = html.css("html body div#container div#IbisInfo.ibisinfo ul.clFogisMenu.no-print li a")[2]["href"].match(/[0-9]*$/).to_s.to_i
       @district = District.new(district_id)
       Cache.set(self)
     end
     html = Nokogiri::HTML(open(@url))
     html.css('html body div#container div#IbisInfo.ibisinfo').css('a').each do |team|
-      @teams[team.content] = team["href"].match(/[0-9]*$/).to_s.to_i
+      @teams[team.content.strip] = team["href"].match(/[0-9]*$/).to_s.to_i
     end
   end
 
