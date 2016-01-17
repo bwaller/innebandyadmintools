@@ -54,7 +54,7 @@ ARGV.each do |argv|
      
       info += "<p>" + myteam.serie.anchor("target=\"_blank\"", myteam.serie.name) 
       info += "<br>Matchnummer: " + event.anchor("target=\"_blank\"", event.number.to_s) 
-      info += "<br>"+event.anchor("target=\"_blank\"", "Ibis matchtrupp") 
+      info += "<br>"+event.anchor_matchtrupp("target=\"_blank\"", "Ibis matchtrupp") 
       if event.is_away? then
         info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
       end

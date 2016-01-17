@@ -87,6 +87,10 @@ class Event
     return "<a " + attributes + " href=" + @url + ">" + content + "</a>"
   end
 
+  def anchor_matchtrupp(attributes, content)
+    return "<a " + attributes + " href=\"https://ibis.innebandy.se/Fogisforeningklient/Match/MatchTrupp.aspx?matchId=" + @id.to_s + "\">" + content + "</a>"
+  end
+
   def to_s
     return @id.to_s + " " + @url + " " + @number.to_s + " " + @home_team.name + " " + @away_team.name + " " + @serie.name + " " + @start_time.to_s + " " + @end_time.to_s + " " + @venue.id.to_s + " " + is_home?.to_s 
   end
