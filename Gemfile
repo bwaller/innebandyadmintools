@@ -10,3 +10,4 @@ gem "writeexcel"
 gem "nokogiri"
 gem 'redis', '~>3.2'
 gem 'sinatra'
+gem 'google_distance_matrix'

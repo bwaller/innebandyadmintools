@@ -1,9 +1,10 @@
-# encoding: utf-8
+#encoding: utf-8
 
 require 'date'
 require 'writeexcel'
 require "./serie.rb"
 require "./team.rb"
+require "google_distance_matrix"
 
 veckodag = Array.new(7)
 veckodag[1] = "måndag"
@@ -30,8 +31,17 @@ worksheet.write(row, 6, "Startdatum")
 worksheet.write(row, 7, "Stopdatum")
 worksheet.write(row, 8, "Kontakt")
 
+matrix = GoogleDistanceMatrix::Matrix.new
+matrix.configure do |config|
+  config.mode = 'driving'
+  #config.google_api_key = "AIzaSyC1AQr1tR2KtKLLtGebf6ULzDY4e4iZVVw"
+end
+
 ARGV.each do |argv| 
   myteam = Team.new(argv.to_i)
+  #Initialize google matrix origins address
+  origin_address = GoogleDistanceMatrix::Place.new address: myteam.club.address.match(/[[:alpha:]]*$/).to_s
+  matrix.origins << origin_address
   puts "Creating serie " + myteam.serie.name
   myteam.populate_events
   myteam.events.each do |event|
@@ -43,6 +53,7 @@ ARGV.each do |argv|
     venue_name, event_start_clock, event_end_clock, event_start_date, event_end_date = ""
 
     if event.is_valid? then
+
       heading = event.home_team.name + " vs " + event.away_team.name
       venue_name = event.venue.name
       answerdate = event.start_time - 3
@@ -50,6 +61,18 @@ ARGV.each do |argv|
       if event.is_away? && event.away_team
         source_address = event.away_team.club.address.match(/[[:alpha:]]*$/).to_s
         info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
+        matrix.reset!
+        matrix.destinations.pop
+        destination_address = GoogleDistanceMatrix::Place.new address: event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality 
+        matrix.destinations << destination_address
+        #matrix.configuration.departure_time = (event.start_time-Rational(1,24))
+        route = matrix.shortest_route_by_duration_to(destination_address)
+        if route then
+          hour = (event.start_time-Rational(route.duration_in_seconds,24*60*60)).strftime("%H")
+          minute = (((event.start_time-Rational(route.duration_in_seconds,24*60*60)).strftime("%M").to_i/5)*5).to_s
+          info += "Lämplig tid att åka från " + myteam.club.address.match(/[[:alpha:]]*$/).to_s + " är " + hour + ":" + minute + " enligt Google Maps.<br />"
+        end
+ 
       end
      
       info += "<p>" + myteam.serie.anchor("target=\"_blank\"", myteam.serie.name) 
