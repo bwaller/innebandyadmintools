@@ -37,7 +37,10 @@ class Team
     else
       @url = @@team_base_url + @id.to_s
       html = Nokogiri::HTML(open(url))
-      @name = html.at_xpath("/html/body/div[2]/div[1]/div/h1").content
+      search_path = '//*[@href="ft.aspx?flid='+ @id.to_s + '"]'
+      html.xpath(search_path).each do |elem|
+        @name = elem.content
+      end
       club_id, contact_person_id, serie_id = 0
       html.css('a').each do |anchor|
         club_id = anchor.attribute('href').value.match(/[0-9]*$/).to_s.to_i if anchor.attribute('href').value.match(/feid/) 
