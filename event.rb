@@ -83,6 +83,10 @@ class Event
     return @@stats_base_url
   end
 
+  def anchor(attributes, content)
+    return "<a " + attributes + " href=" + @url + ">" + content + "</a>"
+  end
+
   def to_s
     return @id.to_s + " " + @url + " " + @number.to_s + " " + @home_team.name + " " + @away_team.name + " " + @serie.name + " " + @start_time.to_s + " " + @end_time.to_s + " " + @venue.id.to_s + " " + is_home?.to_s 
   end

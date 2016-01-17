@@ -42,8 +42,8 @@ class Serie
     end
   end
 
-  def href
-    return "<a href=" + @url + ">" + @name + "</a>"
+  def anchor(attributes, content)
+    return "<a " + attributes + " href=" + @url + ">" + content + "</a>"
   end
 
   def to_s

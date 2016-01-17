@@ -30,14 +30,6 @@ worksheet.write(row, 6, "Startdatum")
 worksheet.write(row, 7, "Stopdatum")
 worksheet.write(row, 8, "Kontakt")
 
-def get_event_htmlanchor(id, text)
-  return "<a target=\"_blank\" href=\"http://statistik.innebandy.se/ft.aspx?scr=result&fmid=" + id.to_s + "\">" + text + "</a>" 
-end
-
-def get_event_matchtruppanchor(id, text)
-  return "<a href=\"https://ibis.innebandy.se/Fogisforeningklient/Match/MatchTrupp.aspx?matchId=" + id.to_s + "\">" + text + "</a>"
-end
-
 ARGV.each do |argv| 
   myteam = Team.new(argv.to_i)
   puts "Creating serie " + myteam.serie.name
@@ -60,13 +52,13 @@ ARGV.each do |argv|
         info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
       end
      
-      info += "<p style=\"font-size:12px\">" + myteam.serie.href 
-      info += "<br>Matchnummer: " + get_event_htmlanchor(event.id, event.number.to_s) 
-      info += "<br>"+get_event_matchtruppanchor(event.id, "Ibis matchtrupp") 
+      info += "<p>" + myteam.serie.anchor("target=\"_blank\"", myteam.serie.name) 
+      info += "<br>Matchnummer: " + event.anchor("target=\"_blank\"", event.number.to_s) 
+      info += "<br>"+event.anchor("target=\"_blank\"", "Ibis matchtrupp") 
       if event.is_away? then
         info += "<br>Hemmalagets färger: " + event.home_team.dress_colors
       end
-      info += "<br>Spelschema för <a href=\"" + event.venue.url + "\">" + venue_name + "</a>"  
+      info += "<br>Spelschema för <a target=\"_blank\" href=\"" + event.venue.url + "\">" + venue_name + "</a>"  
       info += "</p>"
   
       event_start_clock = (event.start_time-Rational(45,24*60)).strftime("%H:%M")
