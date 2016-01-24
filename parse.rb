@@ -4,7 +4,6 @@ require 'date'
 require 'writeexcel'
 require "./serie.rb"
 require "./team.rb"
-require "google_distance_matrix"
 
 veckodag = Array.new(7)
 veckodag[1] = "måndag"
@@ -31,17 +30,9 @@ worksheet.write(row, 6, "Startdatum")
 worksheet.write(row, 7, "Stopdatum")
 worksheet.write(row, 8, "Kontakt")
 
-matrix = GoogleDistanceMatrix::Matrix.new
-matrix.configure do |config|
-  config.mode = 'driving'
-  #config.google_api_key = "AIzaSyC1AQr1tR2KtKLLtGebf6ULzDY4e4iZVVw"
-end
-
 ARGV.each do |argv| 
   myteam = Team.new(argv.to_i)
   #Initialize google matrix origins address
-  origin_address = GoogleDistanceMatrix::Place.new address: myteam.club.address.match(/[[:alpha:]]*$/).to_s
-  matrix.origins << origin_address
   puts "Creating serie " + myteam.serie.name
   myteam.populate_events
   myteam.events.each do |event|
@@ -61,18 +52,26 @@ ARGV.each do |argv|
       if event.is_away? && event.away_team
         source_address = event.away_team.club.address.match(/[[:alpha:]]*$/).to_s
         info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
-        matrix.reset!
-        matrix.destinations.pop
-        destination_address = GoogleDistanceMatrix::Place.new address: event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality 
-        matrix.destinations << destination_address
-        #matrix.configuration.departure_time = (event.start_time-Rational(1,24))
-        route = matrix.shortest_route_by_duration_to(destination_address)
-        if route then
-          hour = (event.start_time-Rational(route.duration_in_seconds,24*60*60)).strftime("%H")
-          minute = (((event.start_time-Rational(route.duration_in_seconds,24*60*60)).strftime("%M").to_i/5)*5).to_s
-          info += "Lämplig tid att åka från " + myteam.club.address.match(/[[:alpha:]]*$/).to_s + " är " + hour + ":" + minute + " enligt Google Maps.<br />"
+        if DateTime.now < event.start_time then
+          route_url = URI.encode(
+                      "https://maps.googleapis.com/maps/api/distancematrix/json" + 
+                      "?key=AIzaSyC1AQr1tR2KtKLLtGebf6ULzDY4e4iZVVw" + 
+                      "&traffic_model=pessimistic" + 
+                      "&departure_time=" + (event.start_time - Rational(45,24*60) - Rational(1,48)).strftime('%s') +
+                      "&origins=" + source_address +
+                      "&destinations=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality
+                      )
+          matrix = JSON.parse(Nokogiri::HTML(open(route_url)))
+          travel_time = 0
+          if matrix["status"] == "OK" && matrix["rows"][0]["elements"][0]["status"] == "OK" then
+            travel_time = matrix["rows"][0]["elements"][0]["duration_in_traffic"]["value"].to_i
+          end
+          if travel_time > 0 then
+            hour = (event.start_time-Rational(travel_time,24*60*60)-Rational(45,24*60)).strftime("%H")
+            minute = (((event.start_time-Rational(travel_time,24*60*60)-Rational(45,24*60)).strftime("%M").to_i/5)*5).to_s.rjust(2,'0')
+            info += "Lämplig tid att åka från " + myteam.club.address.match(/[[:alpha:]]*$/).to_s + " är " + hour + ":" + minute + ". (Restid enligt Google Maps är " + (travel_time/60).to_i.to_s + " min .)<br />"
+          end
         end
- 
       end
      
       info += "<p>" + myteam.serie.anchor("target=\"_blank\"", myteam.serie.name) 
