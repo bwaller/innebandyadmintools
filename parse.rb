@@ -51,7 +51,9 @@ ARGV.each do |argv|
       info = "<p>Matchstart " + event.start_time.strftime("%H:%M") + ". Osa senast " + veckodag[answerdate.cwday] + " 20.00.</p>"
       if event.is_away? && event.away_team
         source_address = event.away_team.club.address.match(/[[:alpha:]]*$/).to_s
-        info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + "</a> har adress: <br />" + event.venue.streetaddress + "<br /> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
+        info += "<p><a target=\"_blank\" href=\"http://maps.google.se/maps?saddr=" + source_address + 
+                "&daddr=" + event.venue.streetaddress + "+" + event.venue.postal_code + "+" + event.venue.locality + "\">" + event.venue.name + 
+                "</a> har adress: <br>" + event.venue.streetaddress + "<br> " + event.venue.postal_code + " " + event.venue.locality + "</p>"
         if DateTime.now < event.start_time then
           route_url = URI.encode(
                       "https://maps.googleapis.com/maps/api/distancematrix/json" + 
@@ -69,7 +71,7 @@ ARGV.each do |argv|
           if travel_time > 0 then
             hour = (event.start_time-Rational(travel_time,24*60*60)-Rational(45,24*60)).strftime("%H")
             minute = (((event.start_time-Rational(travel_time,24*60*60)-Rational(45,24*60)).strftime("%M").to_i/5)*5).to_s.rjust(2,'0')
-            info += "Lämplig tid att åka från " + myteam.club.address.match(/[[:alpha:]]*$/).to_s + " är " + hour + ":" + minute + ". (Restid enligt Google Maps är " + (travel_time/60).to_i.to_s + " min .)<br />"
+            info += "Lämplig tid att åka från " + myteam.club.address.match(/[[:alpha:]]*$/).to_s + " är " + hour + ":" + minute + ". (Restid enligt Google Maps är " + (travel_time/60).to_i.to_s + " min .)<br>"
           end
         end
       end
