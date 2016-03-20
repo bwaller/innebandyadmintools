@@ -19,4 +19,9 @@ class Cache
   def self.get(key)
     return @@thecache.get(key)
   end
+  
+  def self.info()
+    return @@thecache.info()
+  end
+
 end

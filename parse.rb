@@ -4,6 +4,12 @@ require 'date'
 require 'writeexcel'
 require "./serie.rb"
 require "./team.rb"
+require "google/api_client"
+require "google_drive"
+
+# Creates a session. This will prompt the credential via command line for the
+# first time and save it to config.json file for later usages.
+session = GoogleDrive.saved_session("config.json")
 
 veckodag = Array.new(7)
 veckodag[1] = "måndag"
@@ -105,6 +111,8 @@ ARGV.each do |argv|
 
   end
 end
+
+puts Cache.info.to_s
 
 workbook.close
 puts "Open created document with", "soffice --calc " +  outfile
