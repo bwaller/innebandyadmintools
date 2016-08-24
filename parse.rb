@@ -4,8 +4,7 @@ require 'date'
 require 'writeexcel'
 require "./serie.rb"
 require "./team.rb"
-require "google/api_client"
-require "google_drive"
+require "./ical.rb"
 
 # Creates a session. This will prompt the credential via command line for the
 # first time and save it to config.json file for later usages.
@@ -90,11 +89,20 @@ ARGV.each do |argv|
       end
       info += "<br>Spelschema för <a target=\"_blank\" href=\"" + event.venue.url + "\">" + venue_name + "</a>"  
       info += "</p>"
-  
+
       event_start_clock = (event.start_time-Rational(45,24*60)).strftime("%H:%M")
       event_end_clock = event.end_time.strftime("%H:%M")
       event_start_date = event.start_time.strftime("%Y-%m-%d")
       event_end_date = event.end_time.strftime("%Y-%m-%d")
+
+      ical_event = Icaljs.new(event_start_date + " " + event_start_clock,
+                              event_end_date + " " + event_end_clock,
+                              heading,
+                              "Matchstart: " + "",
+                              venue_name)
+      info += ical_event.event_html
+      info += ical_event.include_js_html
+  
     else
       puts "Event with id " + event.id.to_s + " is invalid"
     end
