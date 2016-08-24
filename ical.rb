@@ -1,27 +1,40 @@
 # encoding: UTF-8
-require 'icalendar'
 
-# Create a calendar with an event (standard method)
-cal = Icalendar::Calendar.new
-cal.event do |e|
-  e.dtstart     = Icalendar::Values::Date.new('20050428')
-  e.dtend       = Icalendar::Values::Date.new('20050429')
-  e.summary     = "Meeting with the man."
-  e.description = "Have a long lunch meeting and decide nothing..."
-  e.ip_class    = "PRIVATE"
+class Ical
+ 
+  def initialize(start_date, end_date, title, description, location)
+    @start_date = start_date
+    @end_date = end_date
+    @title = title
+    @description = description
+    @location = location
+  end
+
+  def include_js_html
+    return '<script type="text/javascript" src="https://addevent.com/libs/atc/1.6.1/atc.min.js" async defer></script>'
+  end
+  
+  def event_html
+    ans = '<div title="Add to Calendar" class="addeventatc">'
+    ans += 'Add to calendar'
+    ans += '<span class="start">' + @start_date + '</span>'
+    ans += '<span class="end">' + @end_date + '</span>'
+    ans += '<span class="timezone">Europe/Stockholm</span>'
+    ans += '<span class="title">' + @title + '</span>'
+    ans += '<span class="description">' + @description + '</span>'
+    ans += '<span class="location">' + @location + '</span>'
+    #ans += '<span class="organizer">Organizer</span>'
+    #ans += '<span class="organizer_email">Organizer e-mail</span>'
+    ans += '<span class="all_day_event">false</span>'
+    ans += '<span class="date_format">MM/DD/YYYY</span>'
+    ans += '<span class="client">aoWwMfDsvzwhGzfvymPv20458</span>'
+    ans += '</div>'
+    return ans
+  end
+
 end
 
-event = Icalendar::Event.new
-event.dtstart = DateTime.civil(2006, 6, 23, 8, 30)
-event.summary = "A great event!"
-cal.add_event(event)
-
-event2 = cal.event  # This automatically adds the event to the calendar
-event2.dtstart = DateTime.civil(2006, 6, 24, 8, 30)
-event2.summary = "Another great event!"
-
-cal.publish
-
-cal_string = cal.to_ical
-puts cal_string
+ical = Ical.new("09/07/2016 09:00 AM","09/07/2016 10:00 AM","Ekero IK vs Taby","Matchstart 09:45","Mälaröhallen")
+puts ical.event_html().to_s
+puts ical.include_js_html().to_s
 
