@@ -6,10 +6,6 @@ require "./serie.rb"
 require "./team.rb"
 require "./ical.rb"
 
-# Creates a session. This will prompt the credential via command line for the
-# first time and save it to config.json file for later usages.
-session = GoogleDrive.saved_session("config.json")
-
 veckodag = Array.new(7)
 veckodag[1] = "måndag"
 veckodag[2] = "tisdag"
@@ -95,10 +91,11 @@ ARGV.each do |argv|
       event_start_date = event.start_time.strftime("%Y-%m-%d")
       event_end_date = event.end_time.strftime("%Y-%m-%d")
 
-      ical_event = Icaljs.new(event_start_date + " " + event_start_clock,
+      ical_event_description = "Matchstart: " + event.start_time.strftime("%H:%M")
+      ical_event = Ical.new(event_start_date + " " + event_start_clock,
                               event_end_date + " " + event_end_clock,
                               heading,
-                              "Matchstart: " + "",
+                              ical_event_description,
                               venue_name)
       info += ical_event.event_html
       info += ical_event.include_js_html
