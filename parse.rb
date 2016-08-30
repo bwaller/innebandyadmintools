@@ -117,7 +117,5 @@ ARGV.each do |argv|
   end
 end
 
-puts Cache.info.to_s
-
 workbook.close
 puts "Open created document with", "soffice --calc " +  outfile

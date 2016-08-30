@@ -34,7 +34,3 @@ class Ical
 
 end
 
-ical = Ical.new("09/07/2016 09:00 AM","09/07/2016 10:00 AM","Ekero IK vs Taby","Matchstart 09:45","Mälaröhallen")
-puts ical.event_html().to_s
-puts ical.include_js_html().to_s
-

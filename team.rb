@@ -16,6 +16,7 @@ class Team
 
   @@team_base_url = Event.stats_base_url  + "ft.aspx?flid="
   @@team_events_base_url = Event.stats_base_url  + "ft.aspx?scr=teamresult&flid="
+  @@team_fixturelist_base_url = Event.stats_base_url  + "ft.aspx?scr=fixturelist&ftid="
   
   attr_accessor :id, :url, :name, :club, :dress_colors, :serie, :contact_person, :events
 
@@ -37,10 +38,6 @@ class Team
     else
       @url = @@team_base_url + @id.to_s
       html = Nokogiri::HTML(open(url))
-      search_path = '//*[@href="ft.aspx?flid='+ @id.to_s + '"]'
-      html.xpath(search_path).each do |elem|
-        @name = elem.content
-      end
       club_id, contact_person_id, serie_id = 0
       html.css('a').each do |anchor|
         club_id = anchor.attribute('href').value.match(/[0-9]*$/).to_s.to_i if anchor.attribute('href').value.match(/feid/) 
@@ -52,6 +49,12 @@ class Team
       html.css('dt').each do |dt|
         @dress_colors = dt.next_element.content.to_s if dt.content.match(/Färger/)
       end  
+      fixturelist_url = @@team_fixturelist_base_url + serie_id.to_s
+      fixturelist_html = Nokogiri::HTML(open(fixturelist_url))
+      search_path = '//*[@href="ft.aspx?flid='+ @id.to_s + '"]'
+      fixturelist_html.xpath(search_path).each do |elem|
+        @name = elem.content
+      end
       @serie = Serie.get_serie(serie_id)
       @contact_person = Person.new(contact_person_id)
       @events = Array.new
