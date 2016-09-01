@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 require 'date'
-require 'writeexcel'
+require 'spreadsheet'
 require "./serie.rb"
 require "./team.rb"
 require "./ical.rb"
@@ -16,22 +16,22 @@ veckodag[6] = "lördag"
 veckodag[7] = "söndag"
 contact_person = "void"
 
-outfile = "sportnik." + DateTime.now.strftime("%Y%m%d_%H%M") + ".xls"
-workbook = WriteExcel.new(outfile)
-worksheet = workbook.add_worksheet
-row = 0
-
-worksheet.write(row, 0, "Kalendertyp")
-worksheet.write(row, 1, "Titel")
-worksheet.write(row, 2, "Plats")
-worksheet.write(row, 3, "Innehåll")
-worksheet.write(row, 4, "Starttid")
-worksheet.write(row, 5, "Sluttid")
-worksheet.write(row, 6, "Startdatum")
-worksheet.write(row, 7, "Stopdatum")
-worksheet.write(row, 8, "Kontakt")
-
+Spreadsheet.client_encoding = "UTF-8"
 ARGV.each do |argv| 
+  workbook = Spreadsheet::Workbook.new
+  worksheet = workbook.create_worksheet 
+  row = 0
+
+  worksheet[row, 0] = "Kalendertyp"
+  worksheet[row, 1] = "Titel"
+  worksheet[row, 2] = "Plats"
+  worksheet[row, 3] = "Innehåll"
+  worksheet[row, 4] = "Starttid"
+  worksheet[row, 5] = "Sluttid"
+  worksheet[row, 6] = "Startdatum"
+  worksheet[row, 7] = "Stopdatum"
+  worksheet[row, 8] = "Kontakt"
+
   myteam = Team.new(argv.to_i)
   #Initialize google matrix origins address
   puts "Creating serie " + myteam.serie.name
@@ -104,18 +104,20 @@ ARGV.each do |argv|
       puts "Event with id " + event.id.to_s + " is invalid"
     end
 
-    worksheet.write(row, 0, "Matcher")
-    worksheet.write(row, 1, heading)
-    worksheet.write(row, 2, venue_name)
-    worksheet.write(row, 3, info)
-    worksheet.write(row, 4, event_start_clock)
-    worksheet.write(row, 5, event_end_clock)
-    worksheet.write(row, 6, event_start_date)
-    worksheet.write(row, 7, event_end_date)
-    worksheet.write(row, 8, contact_person)
+    worksheet[row, 0] = "Matcher"
+    worksheet[row, 1] = heading
+    worksheet[row, 2] = venue_name
+    worksheet[row, 3] = info
+    worksheet[row, 4] = event_start_clock
+    worksheet[row, 5] = event_end_clock
+    worksheet[row, 6] = event_start_date
+    worksheet[row, 7] = event_end_date
+    worksheet[row, 8] = contact_person
 
   end
-end
 
-workbook.close
-puts "Open created document with", "soffice --calc " +  outfile
+  outfile = "sportnikimport_" + myteam.serie.name.gsub(/[a-zåäö ]/,"") + "_" + myteam.name.gsub(/ /,"") + ".xls"
+  workbook.write outfile
+  puts "Open created document with", "soffice --calc " +  outfile
+
+end
