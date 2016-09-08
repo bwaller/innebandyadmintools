@@ -92,6 +92,8 @@ ARGV.each do |argv|
       event_end_date = event.end_time.strftime("%Y-%m-%d")
 
       ical_event_description = "Matchstart: " + event.start_time.strftime("%H:%M")
+      ical_event_description += "<br> #{myteam.serie.name}"
+      ical_event_description += "<br> http://www.ekeroik.se/group/28556"
       ical_event = Ical.new(event_start_date + " " + event_start_clock,
                               event_end_date + " " + event_end_clock,
                               heading,
