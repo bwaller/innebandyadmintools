@@ -4,8 +4,11 @@ set :bind, '0.0.0.0'
 #set :port, 80
  
 get '/' do
-  date=`date`
- "Generate excelfiles for Sportnik import<br>" + date.to_s
+  erb :main
+end
+
+get '/info' do
+  erb :info
 end
 
 get '/generate' do
