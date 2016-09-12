@@ -160,6 +160,7 @@ endyear = startyear+1
 schedule = GameSchedule.new("2015-2016", 
                             DateTime.new(startyear, 9, 23, 8, 0, 0, 1),
                             DateTime.new(endyear, 4, 15, 21, 0, 0, 1))
+=begin
 schedule.add_event("SerieA", Event.new(DateTime.new(startyear, 10, 2, 9, 0, 0, 1), DateTime.new(startyear, 10, 2, 10, 0, 0, 1), "Hässelby IBF"))
 schedule.add_event("SerieB", Event.new(DateTime.new(startyear, 10, 2, 9, 15, 0, 1), DateTime.new(startyear, 10, 2, 10, 0, 0, 1), "Hässelby IBF"))
 schedule.add_event("SerieA", Event.new(DateTime.new(startyear, 10, 9, 13, 0, 0, 1), DateTime.new(startyear, 10, 9, 14, 0, 0, 1), "Ingarö IF", "Ingaröhallen"))
@@ -169,6 +170,7 @@ schedule.add_event("SerieC", Event.new(DateTime.new(startyear, 10, 2, 9, 0, 0, 1
 schedule.add_event("SerieC", Event.new(DateTime.new(startyear, 10, 9, 13, 0, 0, 1), DateTime.new(startyear, 10, 9, 14, 0, 0, 1), "Ingarö IF", "Ingaröhallen"))
 schedule.add_event("SerieC", Event.new(DateTime.new(startyear, 11, 1, 16, 30, 0, 1), DateTime.new(startyear, 11, 1, 17, 30, 0, 1), "Kungsängen IF"))
 schedule.add_event("SerieC", Event.new(DateTime.new(startyear, 10, 4, 12, 0, 0, 1), DateTime.new(startyear, 10, 4, 13, 0, 0, 1), "Ängby", "Ängbyhallen"))
+=end
 schedule.store_day_points
 schedule.draw_days
 schedule.dump
