@@ -13,19 +13,20 @@ class Event
     @id = id
     @url = @@event_base_url + id.to_s
     @serie = serie
-    #puts "Event: " + @url  
     @is_valid = false
     event_html = Nokogiri::HTML(open(@url))
     node_set = event_html.css('td:contains("Laguppställning")') 
     if node_set.to_a.length == 2
       @is_valid = true
+      puts node_set.to_a[0].content.gsub("Laguppställning","").strip
+      puts node_set.to_a[1].content.gsub("Laguppställning","").strip
       home_team_id = @serie.teams[node_set.to_a[0].content.gsub("Laguppställning","").strip]
       away_team_id = @serie.teams[node_set.to_a[1].content.gsub("Laguppställning","").strip]
-      @home_team = Team.new (home_team_id)
-      @away_team = Team.new (away_team_id)
+      @home_team = Team.new(home_team_id, @serie.id)
+      @away_team = Team.new(away_team_id, @serie.id)
       team_id == home_team_id ? @is_home = true : @is_home = false  
     end
-
+   
     venue_id = 0
     elem = event_html.at('td:contains("Spelplats")')
     if elem
@@ -92,7 +93,16 @@ class Event
   end
 
   def to_s
-    return @id.to_s + " " + @url + " " + @number.to_s + " " + @home_team.name + " " + @away_team.name + " " + @serie.name + " " + @start_time.to_s + " " + @end_time.to_s + " " + @venue.id.to_s + " " + is_home?.to_s 
+    ans = @id.to_s 
+    ans += " " + @url 
+    ans += " " + @number.to_s
+    ans += " " + @home_team.name
+    ans += " " + @away_team.name
+    ans += " " + @serie.name
+    ans += " " + @start_time.to_s
+    ans += " " + @end_time.to_s
+    ans += " " + @venue.id.to_s
+    return ans + " " + is_home?.to_s 
   end
 end # Event
 

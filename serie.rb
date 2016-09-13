@@ -37,8 +37,8 @@ class Serie
       Cache.set(self)
     end
     html = Nokogiri::HTML(open(@url))
-    html.css('html body div#container div#IbisInfo.ibisinfo').css('a').each do |team|
-      @teams[team.content.strip] = team["href"].match(/[0-9]*$/).to_s.to_i
+    html.css('html body div#container div#IbisInfo.ibisinfo').css('a').each do |anchor|
+      @teams[anchor.content.strip] = anchor["href"].match(/[0-9]*$/).to_s.to_i if anchor.to_s.match(/ft.aspx\?flid=/)
     end
   end
 
