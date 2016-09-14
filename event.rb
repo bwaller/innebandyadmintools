@@ -14,17 +14,18 @@ class Event
     @url = @@event_base_url + id.to_s
     @serie = serie
     @is_valid = false
+    @is_home = true
     event_html = Nokogiri::HTML(open(@url))
     node_set = event_html.css('td:contains("Laguppställning")') 
     if node_set.to_a.length == 2
       @is_valid = true
-      puts node_set.to_a[0].content.gsub("Laguppställning","").strip
-      puts node_set.to_a[1].content.gsub("Laguppställning","").strip
       home_team_id = @serie.teams[node_set.to_a[0].content.gsub("Laguppställning","").strip]
       away_team_id = @serie.teams[node_set.to_a[1].content.gsub("Laguppställning","").strip]
       @home_team = Team.new(home_team_id, @serie.id)
       @away_team = Team.new(away_team_id, @serie.id)
-      team_id == home_team_id ? @is_home = true : @is_home = false  
+      team_id.to_i == home_team_id.to_i ? @is_home = true : @is_home = false  
+    else
+      puts "What the fuck..?"
     end
    
     venue_id = 0

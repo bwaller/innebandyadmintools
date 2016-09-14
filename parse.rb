@@ -45,7 +45,6 @@ myteam.events.each do |event|
 
   if event.is_valid? then
 
-    puts "event: " + event.to_s
     heading = event.home_team.name + " vs " + event.away_team.name
     venue_name = event.venue.name
     answerdate = event.start_time - 3
