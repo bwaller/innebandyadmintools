@@ -8,7 +8,9 @@ class Cache
   @@thecache = Redis.new  
 
   def self.key(object)
-    return object.class.to_s+object.id.to_s    
+    key = object.class.to_s+object.id.to_s 
+    key += "." + object.serie.id.to_s if (defined? object.serie)
+    return key   
   end
 
   def self.set(object)

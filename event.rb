@@ -23,6 +23,8 @@ class Event
       away_team_id = @serie.teams[node_set.to_a[1].content.gsub("Laguppställning","").strip]
       @home_team = Team.new(home_team_id, @serie.id)
       @away_team = Team.new(away_team_id, @serie.id)
+      @is_valid = false if @home_team.name.nil? 
+      @is_valid = false if @away_team.name.nil? 
       team_id.to_i == home_team_id.to_i ? @is_home = true : @is_home = false  
     else
       puts "What the fuck..?"
