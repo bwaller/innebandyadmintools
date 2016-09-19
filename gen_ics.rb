@@ -31,4 +31,7 @@ myteam.events.each do |event|
 
 end
 
-puts cal.to_ical
+outfile = myteam.serie.name.gsub(/[a-zåäö ]/,"") + "_" + myteam.name.gsub(/ /,"") + ".ics"
+of = File.open(outfile,"w+")
+of.puts(cal.to_ical)
+puts outfile
