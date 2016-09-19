@@ -7,7 +7,7 @@ class Event
   @@stats_base_url = "http://statistik.innebandy.se/"
   @@event_base_url = @@stats_base_url + "ft.aspx?scr=result&fmid="
 
-  attr_accessor :id, :url, :home_team, :away_team, :number, :start_time, :end_time, :venue
+  attr_accessor :id, :url, :home_team, :away_team, :number, :start_time, :end_time, :venue, :serie
 
   def initialize(id, team_id, serie, length_m = 60)
     @id = id
