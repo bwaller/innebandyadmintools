@@ -5,7 +5,6 @@
     <form action = "/generate">
       <fieldset>
         <legend>Generate excelfile for Sportnik import</legend>
-        N.b! <a href="http://www.sportnik.com">Sportnik</a> import seems to currently work only with Firefox and Safari! <br>
         <select name="team_id">
           <option value="481.5186">Pojkar Mörkröd Svår</option>
           <option value="494.5195">Pojkar Ljusröd Svår</option>
@@ -34,7 +33,10 @@
           <option value="472.5736">Flickor Blå Svår Mellersta</option>
         </select>
         <br>
-        <input type="submit" value="Generate"></input> 
+        <input type="submit" value="Generate excel"></input> 
+        <p>
+        N.b! <a href="http://www.sportnik.com">Sportnik</a> import seems to currently work only with Firefox and Safari! <br>
+        </p>
         <p>
           If generation fails or generated filename does not end in .xls please try again.
         </p>
@@ -48,7 +50,7 @@
     </form>
     <form action = "/generate_ics">
       <fieldset>
-        <legend>Generate icsfile for calender import</legend>
+        <legend>Generate icsfile for Calender import</legend>
         <select name="team_id">
           <option value="481.5186">Pojkar Mörkröd Svår</option>
           <option value="494.5195">Pojkar Ljusröd Svår</option>
