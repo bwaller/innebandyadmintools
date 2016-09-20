@@ -58,8 +58,8 @@ class Team
       @events = Array.new
       Cache.set(self)
     end
-    @length_m = 60
-    @length_m = 45 if @serie.name.match(/Blå/)
+    @length_m = 75
+    @length_m = 60 if @serie.name.match(/Blå/)
   end
 
   def href
