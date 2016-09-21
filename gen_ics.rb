@@ -1,7 +1,6 @@
 #encoding: utf-8
 
 require 'date'
-require 'spreadsheet'
 require 'icalendar'
 require "./serie.rb"
 require "./team.rb"
