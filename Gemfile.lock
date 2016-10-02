@@ -28,6 +28,7 @@ GEM
     rack-protection (1.5.3)
       rack
     redis (3.2.2)
+    rmagick (2.16.0)
     ruby-ole (1.2.12)
     sinatra (1.4.6)
       rack (~> 1.4)
@@ -51,6 +52,7 @@ DEPENDENCIES
   icalendar
   nokogiri
   redis (~> 3.2)
+  rmagick
   sinatra
   spreadsheet
   time_difference
