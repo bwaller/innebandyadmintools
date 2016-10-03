@@ -6,6 +6,7 @@ include Magick
 event_height_px = 20
 day_height_px = event_height_px*ARGV.count
 margin_width_px = 60
+margin_height_px = 40
 start_hour = 8
 end_hour = 21
 start_date = Date.new(2016,10,01)
@@ -33,12 +34,19 @@ date_line.stroke_width = 5
 hour_line = Magick::Draw.new
 hour_line.stroke_width = 5
 
+y_offset = margin_height_px
+y_coordinate = Hash.new
 (start_date...end_date).each do |date|
-  width_px = 60
-  y_offset = (date.ld-start_date.ld)*day_height_px
-  text.annotate(canvas, width_px,day_height_px,0, y_offset, "#{date.strftime('%a')}")
-  text.annotate(canvas, width_px,day_height_px,25, y_offset, "#{date.strftime('%m-%d')}")
-  date_line.line(0,y_offset,canvas_width_px,y_offset)
+  text_width_px = 60
+  case date.cwday 
+  when 6,7 #Sunday
+    text.annotate(canvas, text_width_px,day_height_px,0, y_offset, "#{date.strftime('%a')}")
+    text.annotate(canvas, text_width_px,day_height_px,25, y_offset, "#{date.strftime('%d %b')}")
+    date_line.line(0,y_offset,canvas_width_px,y_offset)
+    y_coordinate[date] = y_offset
+    y_offset += day_height_px
+  end
+
 end
 
 (start_hour..end_hour).each do |hour|
@@ -57,18 +65,21 @@ ARGV.each do |file|
     cal.events.each do |event|
 
       #puts event.dtstart.to_s + " " + event.summary
+      if y_coordinate.key?(event.dtstart.to_date) then
 
-      x0 = (event.dtstart.day_fraction*24*60).to_i - start_hour*60 + margin_width_px
-      x1 = (event.dtend.day_fraction*24*60).to_i-start_hour*60 + margin_width_px
-      y0 = (event.dtstart.ld-start_date.ld)*day_height_px+(file_count-1)*event_height_px
-      y1 = y0 + event_height_px
+        x0 = (event.dtstart.day_fraction*24*60).to_i - start_hour*60 + margin_width_px
+        x1 = (event.dtend.day_fraction*24*60).to_i-start_hour*60 + margin_width_px
+        y0 = y_coordinate[event.dtstart.to_date] + event_height_px*(file_count-1)
+        y1 = y0 + event_height_px
 
-      color = colors[cal_count-1]
-      rect.stroke(color)
-      rect.fill(color)
-      rect.fill_opacity(0.2)
-      rect.roundrectangle(x0,y0, x1,y1, event_height_px/4,event_height_px/4)
-      rect.annotate(canvas,x1-x0,y1-y0,x0,y0,"#{event.summary}")
+        color = colors[cal_count-1]
+        rect.stroke(color)
+        rect.fill(color)
+        rect.fill_opacity(0.2)
+        rect.roundrectangle(x0,y0, x1,y1, event_height_px/4,event_height_px/4)
+        rect.annotate(canvas,x1-x0,y1-y0,x0,y0,"#{event.summary}")
+
+      end
 
     end
 
@@ -83,6 +94,6 @@ rect.draw(canvas)
 #canvas.display
 canvas.write("junk.png")
 
-puts canvas_width_px.to_s + "x" + canvas_height_px.to_s 
+#puts canvas_width_px.to_s + "x" + canvas_height_px.to_s 
 
 exit
