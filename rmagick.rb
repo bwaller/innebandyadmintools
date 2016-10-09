@@ -16,7 +16,8 @@ canvas_height_px = (end_date-start_date)*day_height_px.to_i
 colors = ["RoyalBlue1","turquoise1","fuchsia","SlateBlue1","Green", "Blue", "Red", "Yellow", "Pink", "Magenta"]
 
 canvas = Magick::ImageList.new
-canvas.new_image(canvas_width_px, canvas_height_px, Magick::HatchFill.new('white', 'gray80'))
+#Magick::HatchFill.new('white', 'gray80')
+canvas.new_image(canvas_width_px, canvas_height_px)
 
 text = Magick::Draw.new
 text.font_family = 'helvetica'
@@ -36,26 +37,18 @@ hour_line.stroke_width = 5
 
 y_offset = margin_height_px
 y_coordinate = Hash.new
+
+#####################
+# Populate dates hash
+#####################
+dates = Hash.new
 (start_date...end_date).each do |date|
-  text_width_px = 60
-  case date.cwday 
-  when 6,7 #Sunday
-    text.annotate(canvas, text_width_px,day_height_px,0, y_offset, "#{date.strftime('%a')}")
-    text.annotate(canvas, text_width_px,day_height_px,25, y_offset, "#{date.strftime('%d %b')}")
-    date_line.line(0,y_offset,canvas_width_px,y_offset)
-    y_coordinate[date] = y_offset
-    y_offset += day_height_px
-  end
-
+  dates[date] = Array.new
 end
 
-(start_hour..end_hour).each do |hour|
-  x0_px = margin_width_px+(hour-start_hour)*60
-  hour_line.line(x0_px, 0, x0_px, canvas_height_px) 
-end
-
-file_count = 1
-cal_count = 1
+###############################
+# Add Icalendar events to dates
+###############################
 ARGV.each do |file|
 
   cal_file = File.open(file)
@@ -64,28 +57,21 @@ ARGV.each do |file|
 
     cal.events.each do |event|
 
-      #puts event.dtstart.to_s + " " + event.summary
-      if y_coordinate.key?(event.dtstart.to_date) then
-
-        x0 = (event.dtstart.day_fraction*24*60).to_i - start_hour*60 + margin_width_px
-        x1 = (event.dtend.day_fraction*24*60).to_i-start_hour*60 + margin_width_px
-        y0 = y_coordinate[event.dtstart.to_date] + event_height_px*(file_count-1)
-        y1 = y0 + event_height_px
-
-        color = colors[cal_count-1]
-        rect.stroke(color)
-        rect.fill(color)
-        rect.fill_opacity(0.2)
-        rect.roundrectangle(x0,y0, x1,y1, event_height_px/4,event_height_px/4)
-        rect.annotate(canvas,x1-x0,y1-y0,x0,y0,"#{event.summary}")
-
-      end
+      key = event.dtstart.to_date
+      dates[key].push(event) if dates[key]
 
     end
 
-    cal_count += 1
   end
-  file_count += 1
+end
+
+############################
+# Draw all dates with events
+############################
+dates.each do |key,date|
+  date.each do |event|
+    
+  end
 end
 
 date_line.draw(canvas)
