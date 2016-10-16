@@ -8,6 +8,9 @@ require "./team.rb"
 team_id = ARGV[0]
 serie_id = ARGV[1]
 
+event_start_time_marginal = 45 #minutes
+event_start_time_marginal = ARGV[2].to_i if ARGV.size == 3
+
 cal = Icalendar::Calendar.new
 
 myteam = Team.new(ARGV[0], ARGV[1])
@@ -17,7 +20,7 @@ myteam.events.each do |event|
   if event.is_valid? then
 
     ical_event = Icalendar::Event.new
-    ical_event.dtstart = (event.start_time-Rational(45,24*60))
+    ical_event.dtstart = (event.start_time-Rational(event_start_time_marginal,24*60))
     ical_event.dtend = event.end_time
     ical_event.summary = event.home_team.name.to_s.strip + " vs " + event.away_team.name.to_s.strip
     ical_event.location = event.venue.name.to_s 
