@@ -11,7 +11,7 @@ end_hour = 21
 start_date = Date.new(2016,9,26)
 end_date = Date.new(2017,04,15)
 canvas_width_px = margin_width_px+(end_hour-start_hour)*60
-colors = ["Green", "Blue", "Red", "DarkTurquoise", "YellowGreen", "SlateGrey3"]
+colors = ["Blue", "DarkTurquoise", "Red", "Green", "YellowGreen", "SlateGray"]
 
 text = Magick::Draw.new
 
@@ -39,6 +39,19 @@ quarter_line.stroke_width(1)
 
 hour_text = Magick::Draw.new
 
+#Draw full hour text
+def annotate_hours (image_list, draw_object, start_hour, end_hour, margin_width_px, y0)
+  (start_hour..end_hour).each do |hour|
+    x0 = margin_width_px+(hour-start_hour)*60
+    draw_object.annotate(image_list,10,10,x0,y0,"#{hour}:00") do
+      self.font = 'Helvetica'
+      self.pointsize = 9
+      self.align = Magick::CenterAlign
+      self.gravity = Magick::CenterGravity
+    end
+  end
+end
+
 #####################
 # Populate dates hash
 #####################
@@ -51,11 +64,18 @@ end
 # Add Icalendar events to dates
 ###############################
 cal_index = 0
+calender_names = Hash.new
 ARGV.each do |file|
 
   cal_file = File.open(file)
   cals = Icalendar::Calendar.parse(cal_file)
   cals.each do |cal|
+
+    if cal.prodid.to_s.strip.length != 0 then
+      calender_names[cal.prodid] = colors[cal_index] 
+    else
+      calender_names[file] = colors[cal_index]
+    end
 
     cal.events.each do |event|
       event.x_custom_property.push(colors[cal_index])
@@ -109,6 +129,8 @@ dates.each do |date,cals|
   date_line.stroke_opacity(0.7) if date.monday?
   date_line.line(0, y0, canvas_width_px, y0)
 
+  annotate_hours(canvas, hour_text, start_hour, end_hour, margin_width_px, y0+event_height_px/4) if date.monday? and (date.mday>0 and date.mday<8)
+  
   cals.each do |cal,events|
 
     events.each do |event|
@@ -121,7 +143,6 @@ dates.each do |date,cals|
       rect.fill_opacity(0.2)
       rect.roundrectangle(x0,y0, x1,y1, event_height_px/4,event_height_px/4)
       rect.annotate(canvas,x1-x0,y1-y0,x0,y0,"#{event.summary}")
-  
     end
 
     y0 += event_height_px if cals.size() > 1
@@ -143,13 +164,19 @@ end
     x0_quarter = x0 + quarter*15
     quarter_line.line(x0_quarter, y0_, x0_quarter, y0)
   end 
-  #Draw full hour text
-  hour_text.annotate(canvas,10,10,x0,y0_-10,"#{hour}:00") do
-    self.font = 'Helvetica'
-    self.pointsize = 9
-    self.align = Magick::CenterAlign
-    self.gravity = Magick::CenterGravity
+end
+
+####################
+# Write color legend
+####################
+counter = 0
+calender_names.each do |prodid,color|
+
+  text.annotate(canvas,10,10,margin_width_px,10+counter*15,"#{prodid}") do
+    self.fill = color
   end
+
+  counter += 1
 end
 
 date_line.draw(canvas)

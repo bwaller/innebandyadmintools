@@ -4,23 +4,56 @@ require 'date'
 require 'icalendar'
 require "./serie.rb"
 require "./team.rb"
+require 'optparse'
+require 'ostruct'
 
-team_id = ARGV[0]
-serie_id = ARGV[1]
+options = OpenStruct.new
+options.team_id = nil
+options.serie_id = nil
+options.marginal = 45
+options.name = ""
 
-event_start_time_marginal = 45 #minutes
-event_start_time_marginal = ARGV[2].to_i if ARGV.size == 3
+OptionParser.new do |opts|
+  opts.banner = "Usage: optparser.rb -i venueid [-nh]"
+
+  opts.on("-t", "--teamid id", Integer, "team id") do |t|
+    options.team_id = t
+  end
+
+  opts.on("-s", "--serieid id", Integer, "serie id") do |s|
+    options.serie_id = s
+  end
+
+  opts.on("-m", "--minutesbefore min", Integer, "minutes before game") do |m|
+    options.marginal = m
+  end
+
+  opts.on("-n", "--name name", "Name of schedule") do |n|
+    options.name = n
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+end.parse!
 
 cal = Icalendar::Calendar.new
+if options.name.to_s.strip.length != 0 then
+  cal.prodid = options.name
+else
+  cal.prodid = ""
+end
 
-myteam = Team.new(ARGV[0], ARGV[1])
+myteam = Team.new(options.team_id, options.serie_id)
 myteam.populate_events
 myteam.events.each do |event|
 
   if event.is_valid? then
 
     ical_event = Icalendar::Event.new
-    ical_event.dtstart = (event.start_time-Rational(event_start_time_marginal,24*60))
+    ical_event.dtstart = (event.start_time-Rational(options.marginal,24*60))
     ical_event.dtend = event.end_time
     ical_event.summary = event.home_team.name.to_s.strip + " vs " + event.away_team.name.to_s.strip
     ical_event.location = event.venue.name.to_s 
