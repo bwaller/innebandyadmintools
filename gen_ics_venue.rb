@@ -97,7 +97,7 @@ venue_doc = Nokogiri::HTML(open(@url))
 venue_doc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid tbody.clGrid tr td").each do |td|
   if td["nowrap"] && td.content.length > 0 then
     dtstart = DateTime.parse(td.content)
-    puts td.next_element.content
+    puts td.content + " " + td.next_element.content
     dtend = dtstart + venue_game_length[td.next_element.content.strip] 
     ical_event = Icalendar::Event.new        
     ical_event.dtstart = dtstart
