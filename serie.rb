@@ -47,7 +47,7 @@ class Serie
   end
 
   def to_s
-    return @id.to_s + " " + @name + " " + @url
+    return @id.to_s + " " + @name + " " + @url + " " + teams.to_s
   end
 
   def self.get_serie(id)
