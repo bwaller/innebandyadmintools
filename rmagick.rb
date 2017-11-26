@@ -166,10 +166,13 @@ end
   end 
 end
 
-####################
-# Write color legend
-####################
+###########################################
+# Write date of generation and color legend 
+###########################################
 counter = 0
+text.annotate(canvas,10,10,margin_width_px,10+counter*15,"Generated " + Time.now.strftime("%Y-%m-%d %H:%M"))
+counter += 1
+
 calender_names.each do |prodid,color|
 
   text.annotate(canvas,10,10,margin_width_px,10+counter*15,"#{prodid}") do
