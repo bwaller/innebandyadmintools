@@ -133,7 +133,6 @@ venue_doc.css("html body div#container div#IbisInfo.ibisinfo table.clCommonGrid 
     $stderr.puts "td.content: " + td.content + " " + td.next_element.content
     $stderr.flush
     dtend = dtstart + venue_game_length[td.next_element.content.strip] 
-    dtend = dtstart  
     ical_event = Icalendar::Event.new        
     ical_event.dtstart = dtstart
     ical_event.dtend = dtend
