@@ -25,6 +25,9 @@ class Team
   end
   
   def initialize(id, serie_id)
+    if id == nil or serie_id == nil then
+      abort( "Error new team id: #{}, serie_id: #{serie_id}" )
+    end
     @id = id
     @serie = Serie.get_serie(serie_id)
     if json_str = Cache.get(Cache.key(self)) then
