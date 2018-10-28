@@ -19,8 +19,10 @@ class Event
     node_set = event_html.css('td:contains("Laguppställning")') 
     if node_set.to_a.length == 2
       @is_valid = true
-      home_team_id = @serie.teams[node_set.to_a[0].content.gsub("Laguppställning","").strip]
-      away_team_id = @serie.teams[node_set.to_a[1].content.gsub("Laguppställning","").strip]
+      home_team_name = node_set.to_a[0].content.gsub("Laguppställning","").gsub(" ","")
+      away_team_name = node_set.to_a[1].content.gsub("Laguppställning","").gsub(" ","")
+      home_team_id = @serie.teams[home_team_name]
+      away_team_id = @serie.teams[away_team_name]
       @home_team = Team.new(home_team_id, @serie.id)
       @away_team = Team.new(away_team_id, @serie.id)
       @is_valid = false if @home_team.name.nil? 
