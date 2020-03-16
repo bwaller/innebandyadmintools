@@ -11,6 +11,7 @@ options = OpenStruct.new
 options.team_id = nil
 options.serie_id = nil
 options.marginal = 45
+options.game_length = 0
 options.name = ""
 
 OptionParser.new do |opts|
@@ -30,6 +31,10 @@ OptionParser.new do |opts|
 
   opts.on("-n", "--name name", "Name of schedule") do |n|
     options.name = n
+  end
+
+  opts.on("-l", "--gamelength min", Integer, "Length of game in minutes") do |l|
+    options.game_length = l
   end
 
   opts.on_tail("-h", "--help", "Show this message") do
@@ -54,7 +59,11 @@ myteam.events.each do |event|
 
     ical_event = Icalendar::Event.new
     ical_event.dtstart = (event.start_time-Rational(options.marginal,24*60))
-    ical_event.dtend = event.end_time
+    if options.game_length > 0 then
+      ical_event.dtend = (event.start_time + Rational(options.game_length,24*60))
+    else
+      ical_event.dtend = event.end_time
+    end
     ical_event.summary = event.home_team.name.to_s.strip + " vs " + event.away_team.name.to_s.strip
     ical_event.location = event.venue.name.to_s 
     ical_event.location += '\n' + event.venue.streetaddress.to_s + '\n' + event.venue.postal_code + " " + event.venue.locality if event.is_away?
