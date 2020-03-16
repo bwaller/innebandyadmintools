@@ -8,8 +8,8 @@ margin_width_px = 60
 margin_height_px = 40
 start_hour = 8
 end_hour = 21
-start_date = Date.new(2018,9,26)
-end_date = Date.new(2019,04,15)
+start_date = Date.new(2019,9,26)
+end_date = Date.new(2020,04,15)
 canvas_width_px = margin_width_px+(end_hour-start_hour)*60
 colors = ["Blue", "DarkTurquoise", "Red", "Green", "YellowGreen", "SlateGray"]
 
