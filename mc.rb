@@ -18,9 +18,13 @@ Prawn::Document.generate(output_filename,
 ) do
 
   draw_text info['fixture_number'], :size => 48, :at =>[ 450, 2980 ]
-  draw_text info['serie'],          :size => 48, :at =>[ 1450, 2980 ]
+  if info['serie'].length < 37 then
+    draw_text info['serie'],          :size => 48, :at =>[ 1400, 2980 ]
+  else
+    draw_text info['serie'],          :size => 36, :at =>[ 1400, 2980 ]
+  end
   draw_text info['home_team'],      :size => 48, :at =>[ 450, 2880 ]
-  draw_text info['away_team'],      :size => 48, :at =>[ 1450, 2880 ]
+  draw_text info['away_team'],      :size => 48, :at =>[ 1400, 2880 ]
 
   draw_text info['orig_date'],      :size => 42, :at =>[ 330, 2730 ]
   draw_text info['orig_time'],      :size => 42, :at =>[ 720, 2730 ]
@@ -46,11 +50,11 @@ Prawn::Document.generate(output_filename,
   draw_text info['opponent_email'],   :size => 48, :at => [ 1370, 1490 ]
 
   case info['serie'] 
-  when /Blå Lätt/
+  when /[Bb]lå.*[Ll]ätt/
     y_pos = 1378
-  when /Blå Svår/, /Blå Medel/
+  when /[Bb]lå.*[Ss]vår/, /[Bb]lå.*[Mm]edel/
     y_pos = 1329
-  when /Röd/
+  when /[Rr]öd/
     y_pos = 1280
   when /[Jj]uniorer/
     y_pos = 1231
