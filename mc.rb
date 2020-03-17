@@ -50,9 +50,9 @@ Prawn::Document.generate(output_filename,
   draw_text info['opponent_email'],   :size => 48, :at => [ 1370, 1490 ]
 
   case info['serie'] 
-  when /[Bb]lå.*[Ll]ätt/
+  when /[Bb]lå [Ll]ätt/
     y_pos = 1378
-  when /[Bb]lå.*[Ss]vår/, /[Bb]lå.*[Mm]edel/
+  when /[Bb]lå [Ss]vår/, /[Bb]lå [Mm]edel/
     y_pos = 1329
   when /[Rr]öd/
     y_pos = 1280
