@@ -9,6 +9,7 @@ require './person.rb'
 
 base_url = "http://statistik.innebandy.se/"
 applicant_club = "Ekerö IK"
+fixture_number = "Unknown"
 
 def get_contact_id(team_url)
   contact_id = 0
@@ -36,18 +37,12 @@ end.parse!
 
 page = Nokogiri::HTML(open(options.url))
 
-th = page.css('div#iList th')
-home_team = th[0].content
-home_team_url = base_url + th[0].element_children[0]["href"]
-
-away_team = th[2].content
-away_team_url = base_url + th[2].element_children[0]["href"]
-
 elem = page.at('td:contains("Matchnummer")')
-fixture_number = elem.next_element.content
+fixture_number = elem.next_element.content if elem != nil
 
 elem = page.at('td:contains("Tävling")')
 serie = elem.next_element.content
+serie_url = base_url + elem.next_element.element_children[0]["href"] # Save this for blue series, needed below
 
 elem = page.at('td:contains("Tid")')
 date_time = elem.next_element.content
@@ -56,13 +51,38 @@ orig_time = date_time.split(" ")[1]
 
 elem = page.at('td:contains("Spelplats")')
 orig_venue = elem.next_element.content.gsub(/ , /,", ")
+
+if serie.match(/[Bb]lå/) then
+  elem = page.at('h1:contains("Matchinformation")')
+  home_team = elem.content.gsub("Matchinformation: ","").gsub(/ -.*$/,"").strip
+  away_team = elem.content.gsub(/^.* - /,"").strip
+
+  home_team_url = ""
+  away_team_url = ""
+  serie_page = Nokogiri::HTML(open(serie_url))
+  links = serie_page.css('a')
+  links.each do |link|
+    home_team_url = base_url + link["href"] if link.content.match(/#{home_team.gsub("(","\\(").gsub(")","\\)")}/)
+    away_team_url = base_url + link["href"] if link.content.match(/#{away_team.gsub("(","\\(").gsub(")","\\)")}/)
+  end
+
+else 
+  th = page.css('div#iList th')
   
+  home_team = th[0].content
+  home_team_url = base_url + th[0].element_children[0]["href"]
+
+  away_team = th[2].content
+  away_team_url = base_url + th[2].element_children[0]["href"]
+ 
+end
+
 if home_team.match("Ekerö") then
- applicant_person = Person.new(get_contact_id(home_team_url))
- opponent_person = Person.new(get_contact_id(away_team_url))
+  applicant_person = Person.new(get_contact_id(home_team_url))
+  opponent_person = Person.new(get_contact_id(away_team_url))
 else
- applicant_person = Person.new(get_contact_id(away_team_url))
- opponent_person = Person.new(get_contact_id(home_team_url))
+  applicant_person = Person.new(get_contact_id(away_team_url))
+  opponent_person = Person.new(get_contact_id(home_team_url))
 end
 
 game_change_info = { 
