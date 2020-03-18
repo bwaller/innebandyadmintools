@@ -6,6 +6,8 @@ require 'nokogiri'
 require 'open-uri'
 require 'json'
 require './person.rb'
+require 'prawn'
+require 'tmpdir'
 
 def encode(astring)
   return astring.gsub("å","_aa_").gsub("ä","_ae_").gsub("ö","_oo_").gsub("Å","_AA_").gsub("Ä","_AE_").gsub("Ö","_OO_")
@@ -17,17 +19,24 @@ end
 
 get '/' do
 
-  erb :main, :locals => {:fixture_number => params['fixture_number'], 
-                         :serie => decode(params['serie']),
-                         :home_team => decode(params['home_team']),
-                         :away_team => decode(params['away_team']),
+  params['serie'] ? serie = decode(params['serie']) : serie = ""
+  home_team = decode(params['home_team']) if params['home_team']
+  away_team = decode(params['away_team']) if params['away_team']
+  orig_venue = decode(params['orig_venue']) if params['orig_venue']
+  applicant_contact = decode(params['applicant_contact']) if params['applicant_contact']
+  opponent_contact = decode(params['opponent_contact']) if params['opponent_contact']
+
+  erb :main, :locals => {:fixture_number => params['fixture_number'],
+                         :serie => serie,
+                         :home_team => home_team,
+                         :away_team => away_team,
                          :orig_date => params['orig_date'],
                          :orig_time => params['orig_time'],
-                         :orig_venue => decode(params['orig_venue']),
-                         :applicant_contact => decode(params['applicant_contact']),
+                         :orig_venue => orig_venue,
+                         :applicant_contact => applicant_contact,
                          :applicant_phone => params['applicant_phone'],
                          :applicant_email => params['applicant_email'],
-                         :opponent_contact => decode(params['opponent_contact']),
+                         :opponent_contact => opponent_contact,
                          :opponent_phone => params['opponent_phone'],
                          :opponent_email => params['opponent_email']
                         }
@@ -42,7 +51,7 @@ get '/getgamedata' do
   def get_contact_id(team_url)
     contact_id = 0
 
-    team_page = Nokogiri::HTML(open(team_url)) 
+    team_page = Nokogiri::HTML(open(team_url))
 
     links = team_page.css('div#iList dl').css('a')
     links.each do |link|
@@ -82,9 +91,9 @@ get '/getgamedata' do
       home_team_url = base_url + link["href"] if link.content.match(/#{home_team.gsub("(","\\(").gsub(")","\\)")}/)
       away_team_url = base_url + link["href"] if link.content.match(/#{away_team.gsub("(","\\(").gsub(")","\\)")}/)
     end
-  else 
+  else
     th = page.css('div#iList th')
-  
+
     home_team = th[0].content
     home_team_url = base_url + th[0].element_children[0]["href"]
 
@@ -112,9 +121,81 @@ get '/getgamedata' do
           "&applicant_email='#{applicant_person.email}'" +
           "&opponent_contact='#{opponent_person.name}'" +
           "&opponent_phone='#{opponent_person.cell_phone}'" +
-          "&opponent_email='#{opponent_person.email}'" 
-          
+          "&opponent_email='#{opponent_person.email}'"
+
   redirect encode(query)
 
 end
 
+set :prawn, { :page_layout => :portrait }
+
+get '/renderpdf' do
+
+  size = [2480,3507]
+  img = "match-19-20.png"
+
+  pdf = Prawn::Document.new(:page_size  => size,
+                            :background => img)
+
+  pdf.draw_text params['fixture_number'], :size => 48, :at =>[ 450, 2980 ]
+
+  if params['serie'].length < 37 then
+    pdf.draw_text params['serie'],          :size => 48, :at =>[ 1400, 2980 ]
+  else
+    pdf.draw_text params['serie'],          :size => 36, :at =>[ 1400, 2980 ]
+  end
+  pdf.draw_text params['home_team'],      :size => 48, :at =>[ 450, 2880 ]
+  pdf.draw_text params['away_team'],      :size => 48, :at =>[ 1400, 2880 ]
+
+  pdf.draw_text params['orig_date'],      :size => 42, :at =>[ 330, 2730 ]
+  pdf.draw_text params['orig_time'],      :size => 42, :at =>[ 720, 2730 ]
+  pdf.draw_text params['orig_venue'],     :size => 42, :at =>[ 1370, 2730 ]
+
+  if params['new_fixture_date'].match(/true/) then
+    pdf.draw_text 'X', :size => 56, :at =>[315, 2430]
+    new_date  = params['new_date']
+    new_time  = params['new_time']
+    new_venue = params['new_venue']
+  else
+    pdf.draw_text 'X', :size => 56, :at =>[315, 2275]
+    new_date  = '---'
+    new_time  = '---'
+    new_venue = '---'
+  end
+
+  pdf.draw_text new_date,       :size => 42, :at =>[ 330, 2580 ]
+  pdf.draw_text new_time,       :size => 42, :at =>[ 720, 2580 ]
+  pdf.draw_text new_venue,      :size => 42, :at =>[ 1370, 2580 ]
+
+  pdf.draw_text params['applicant_club'],    :size => 48, :at => [ 550, 2035 ]
+  pdf.draw_text params['applicant_contact'], :size => 48, :at => [ 550, 1935 ]
+  pdf.draw_text params['applicant_phone'],   :size => 48, :at => [ 550, 1835 ]
+  pdf.draw_text params['applicant_email'],   :size => 48, :at => [ 550, 1735 ]
+
+  pdf.draw_text params['opponent_contact'], :size => 48, :at => [ 550, 1590 ]
+  pdf.draw_text params['opponent_phone'],   :size => 48, :at => [ 550, 1490 ]
+  pdf.draw_text params['opponent_email'],   :size => 48, :at => [ 1370, 1490 ]
+
+  case params['serie']
+  when /[Bb]lå [Ll]ätt/
+    y_pos = 1378
+  when /[Bb]lå [Ss]vår/, /[Bb]lå [Mm]edel/
+    y_pos = 1329
+  when /[Rr]öd/
+    y_pos = 1280
+  when /[Jj]uniorer/
+    y_pos = 1231
+  else
+    y_pos = 1231
+  end
+
+  pdf.draw_text 'x', :size => 42, :at => [ 349, y_pos ]
+
+  render_filename = Dir::Tmpname.create(['gamechange-', '.pdf']) {}
+  send_filename = "#{params['fixture_number']}_matchändring.pdf"
+
+  pdf.render_file(render_filename)
+
+  send_file render_filename, :filename => send_filename, :type => 'Application/pdf', :disposition => 'attachment'
+
+end
