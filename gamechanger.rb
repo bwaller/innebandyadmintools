@@ -100,7 +100,6 @@ get '/getgamedata' do
     opponent_person = Person.new(get_contact_id(home_team_url))
   end
 
-  #redirect "/?fixture_number=#{fixture_number}&serie='#{serie}'&home_team='#{home_team}'&away_team='#{away_team}'"
   query = "/?fixture_number=#{fixture_number}" +
           "&serie='#{serie}'" +
           "&home_team='#{home_team}'" +
