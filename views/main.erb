@@ -1,92 +1,151 @@
-<html>
-  <head>
-  <head>
-  <body>
-    <form action = "/generate">
-      <fieldset>
-        <legend>Generate excelfile for Sportnik import</legend>
-        <select name="team_id">
-          <option value="481.5186">Pojkar Mörkröd Svår</option>
-          <option value="494.5195">Pojkar Ljusröd Svår</option>
-          <option value="19338.5220">Flickor Röd Medel Mellersta</option>
-          <option value="455.5221">Flickor Röd Medel Södra</option>
-          <option value="442.5222">Flickor Röd Medellätt Norra</option>
-          <option value="471.5224">Flickor Röd Lätt Norra</option>
-          <option value="484.5331">Pojkar Ljusröd Medel B</option>
-          <option value="489.5332">Pojkar Ljusröd Medel C</option>
-          <option value="488.5206">Pojkar Ljusröd Medellätt Mellersta</option>
-          <option value="490.5238">Pojkar Blå Svår Lätt Norra</option>
-          <option value="491.5239">Pojkar Blå Svår Lätt Mellersta</option>
-          <option value="492.5240">Pojkar Blå Svår Lätt Södra</option>
-          <option value="19339.5242">Pojkar Blå Medel Svår B</option>
-          <option value="13559.5246">Pojkar Blå Medel Lätt B</option>
-          <option value="13561.5251">Pojkar Blå Lätt Svår B</option>
-          <option value="17421.5255">Pojkar Blå Lätt Lätt B Ekerö IK(D)</option>
-          <option value="17420.5255">Pojkar Blå Lätt Lätt B Ekerö IK(C)</option>
-          <option value="13560.5257">Pojkar Blå Lätt Lätt D Ekerö IK(A)</option>
-          <option value="17419.5257">Pojkar Blå Lätt Lätt D Ekerö IK(B)</option>
-          <option value="473.5295">Flickor Blå Medel B</option>
-          <option value="19337.5191">Pojkar Mörkröd Medel Mellersta</option>
-          <option value="17423.5589">Flickor Blå Lätt Lätt C Ekerö IK (B)</option>
-          <option value="19340.5592">Flickor Blå Lätt Svår C</option>
-          <option value="13556.5595">Flickor Blå Medel C</option>
-          <option value="472.5736">Flickor Blå Svår Mellersta</option>
-        </select>
-        <br>
-        <input type="submit" value="Generate excel"></input> 
-        <p>
-        N.b! <a href="http://www.sportnik.com">Sportnik</a> import seems to currently work only with Firefox and Safari! <br>
-        </p>
-        <p>
-          If generation fails or generated filename does not end in .xls please try again.
-        </p>
-        <p>
-          DISCLAIMER! No warranty whatsoever of correct data! Please check carefully before importing!
-        </p>
-        <p>
-          Tip: Generated excelfile can be modified in Excel if you so wish before importing in Sportnik.
-        </p>
-      </fieldset>
-    </form>
-    <form action = "/generate_ics">
-      <fieldset>
-        <legend>Generate icsfile for Calender import</legend>
-        <select name="team_id">
-          <option value="481.5186">Pojkar Mörkröd Svår</option>
-          <option value="494.5195">Pojkar Ljusröd Svår</option>
-          <option value="19338.5220">Flickor Röd Medel Mellersta</option>
-          <option value="455.5221">Flickor Röd Medel Södra</option>
-          <option value="442.5222">Flickor Röd Medellätt Norra</option>
-          <option value="471.5224">Flickor Röd Lätt Norra</option>
-          <option value="484.5331">Pojkar Ljusröd Medel B</option>
-          <option value="489.5332">Pojkar Ljusröd Medel C</option>
-          <option value="488.5206">Pojkar Ljusröd Medellätt Mellersta</option>
-          <option value="490.5238">Pojkar Blå Svår Lätt Norra</option>
-          <option value="491.5239">Pojkar Blå Svår Lätt Mellersta</option>
-          <option value="492.5240">Pojkar Blå Svår Lätt Södra</option>
-          <option value="19339.5242">Pojkar Blå Medel Svår B</option>
-          <option value="13559.5246">Pojkar Blå Medel Lätt B</option>
-          <option value="13561.5251">Pojkar Blå Lätt Svår B</option>
-          <option value="17421.5255">Pojkar Blå Lätt Lätt B Ekerö IK(D)</option>
-          <option value="17420.5255">Pojkar Blå Lätt Lätt B Ekerö IK(C)</option>
-          <option value="13560.5257">Pojkar Blå Lätt Lätt D Ekerö IK(A)</option>
-          <option value="17419.5257">Pojkar Blå Lätt Lätt D Ekerö IK(B)</option>
-          <option value="473.5295">Flickor Blå Medel B</option>
-          <option value="19337.5191">Pojkar Mörkröd Medel Mellersta</option>
-          <option value="17423.5589">Flickor Blå Lätt Lätt C Ekerö IK (B)</option>
-          <option value="19340.5592">Flickor Blå Lätt Svår C</option>
-          <option value="13556.5595">Flickor Blå Medel C</option>
-          <option value="472.5736">Flickor Blå Svår Mellersta</option>
-        </select>
-        <br>
-        <input type="submit" value="Generate ics"></input> 
-        <p>
-          If generation fails or generated filename does not end in .ics please try again.
-        </p>
-        <p>
-          DISCLAIMER! No warranty whatsoever of correct data! Please check carefully before importing!
-        </p>
-      </fieldset>
-    </form>
-  </body>
-</html>
+<style>
+.borderedtext {
+  border-style:solid;
+  border-width: thin;
+  height: 25;
+  width: 180;
+  padding: 1;
+}
+</style>
+
+<h1>
+  Welcome to Gamechanger!
+</h1>
+
+<form action="/getgamedata">
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:left">Matchurl:</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" id="game_url" name="game_url" size="50" /></td>
+      </tr>
+      <tr>
+        <td><input type="submit" value="Hämta matchdata"></td>
+      </tr>
+    </tobdy>
+  </table>
+</form>
+
+<form> 
+<table cellpadding = "2">
+  <thead>
+    <tr>
+      <th style="text-align:left">Matchnummer:</th>
+      <th style="text-align:left">Serie:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input name="fixture_number" type="text" value=<%= fixture_number %> size="44"> </td> 
+      <td><input name="serie" type="text" value=<%= serie %> size="44" > </td>
+    </tr>
+  </tbody>
+</table>
+<table cellpadding = "2">
+  <thead>
+    <tr>
+      <th style="text-align:left">Hemmalag:</td>
+      <th style="text-align:left">Bortalag:</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input name="home_team" type="text" value=<%= home_team %> size="44"> </td> 
+      <td><input name="away_team" type="text" value=<%= away_team %> size="44"> </td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Datum:</th>
+      <th style="text-align:left">Tid:</th>
+      <th style="text-align:left">Hall:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <td><input name="orig_date" type="date" value=<%= orig_date %> > </td> 
+    <td><input name="orig_time" type="time" value=<%= orig_time %> > </td>
+    <td><input name="orig_venue" type="text" value=<%= orig_venue %> size="44"> </td>
+  </tbody>
+</table>
+<table>
+<tr>
+  <td>Datum:</td>
+  <td>Tid:</td>
+  <td>Hall:</td>
+</tr>
+<tr>
+<td><input name="new_date" type="date" value="yyyy-mm-dd" > </td> 
+<td><input name="new_time" type="time" value="--:--" > </td>
+<td><input name="new_venue" type="text" value=<%= orig_venue %> > </td>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Ansökande förening:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input name="ansökande_förening" type="text" value="Ekerö IK" size="30" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Kontaktperson:</th>
+      <th style="text-align:left">Kontaktperson motståndare:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input name="applicant_contact" type="text" value=<%= applicant_contact %> size="30" /></td>
+      <td><input name="opponent_contact" type="text" value=<%= opponent_contact %> size="30" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Telefon:</th>
+      <th style="text-align:left">Telefon:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input name="applicant_phone" type="text" value=<%= applicant_phone %> size="30" /></td>
+      <td><input name="opponent_phone" type="text" value=<%= opponent_phone %> size="30" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Epost:</th>
+      <th style="text-align:left">Epost:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input name="applicant_email" type="text" value=<%= applicant_email %> size="30" /></td>
+      <td><input name="opponent_email" type="text" value=<%= opponent_email %> size="30" /></td>
+    </tr>
+  </tbody>
+
+</table>
+
+<div>
+  <button type="submit" value="Submit">Skapa Ändringsblankett</button>
+</div>
+
+</form>
+
