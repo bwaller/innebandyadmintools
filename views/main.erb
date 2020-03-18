@@ -73,17 +73,26 @@
     <td><input name="orig_venue" type="text" value=<%= orig_venue %> size="44"> </td>
   </tbody>
 </table>
+
+<label for="new_time_false">Vi återkommer med nytt speldatum inom 14 dagar</label>
+<input type="radio" name="new_time" id="new_time_false" value="new_time_false" checked><br>
+<label for="new_time_true">Vi är överens om ny tid</label>
+<input type="radio" name="new_time" id="new_time_true" value="new_time_true"><br>
 <table>
-<tr>
-  <td>Datum:</td>
-  <td>Tid:</td>
-  <td>Hall:</td>
-</tr>
-<tr>
-<td><input name="new_date" type="date" value="yyyy-mm-dd" > </td> 
-<td><input name="new_time" type="time" value="--:--" > </td>
-<td><input name="new_venue" type="text" value=<%= orig_venue %> > </td>
+  <thead>
+    <tr>
+      <th style="text-align:left">Datum:</th>
+      <th style="text-align:left">Tid:</th>
+      <th style="text-align:left">Hall:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <td><input name="new_date" type="date" / > </td> 
+    <td><input name="new_time" type="time" / > </td>
+    <td><input name="new_venue" type="text" value=<%= orig_venue %> size="44"/ > </td>
+  </tbody>
 </table>
+
 <table>
   <thead>
     <tr>
