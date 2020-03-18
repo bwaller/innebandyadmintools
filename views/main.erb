@@ -1,16 +1,25 @@
 <style>
-.borderedtext {
-  border-style:solid;
-  border-width: thin;
-  height: 25;
-  width: 180;
-  padding: 1;
+.button {
+  font: bold 11px Arial;
+  text-decoration: none;
+  padding: 2px 6px 2px 6px;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  border-left: 1px solid #CCCCCC;
+}
+.bottom-six {
+  margin-bottom: 6px;
 }
 </style>
 
 <h1>
   Welcome to Gamechanger!
 </h1>
+
+<p class="bottom-six">
+  Länken bredvid öppnar sidan med Ekerö IK:s lag. Därifrån kan du navigera dig fram till matchen du vill flytta och kopiera dess url. <a href="http://statistik.innebandy.se/ft.aspx?feid=48" class="button" target="_blank">Ekerö IK!</a>
+</p>
 
 <form action="/getgamedata">
   <table>
@@ -30,7 +39,7 @@
   </table>
 </form>
 
-<form> 
+<form action="/renderpdf"> 
 <table cellpadding = "2">
   <thead>
     <tr>
@@ -40,8 +49,8 @@
   </thead>
   <tbody>
     <tr>
-      <td><input name="fixture_number" type="text" value=<%= fixture_number %> size="44"> </td> 
-      <td><input name="serie" type="text" value=<%= serie %> size="44" > </td>
+      <td><input name="fixture_number" type="text" size="44"value=<%= fixture_number %> > </td> 
+      <td><input name="serie" type="text" size="44" value=<%= serie %> > </td>
     </tr>
   </tbody>
 </table>
@@ -54,8 +63,8 @@
   </thead>
   <tbody>
     <tr>
-      <td><input name="home_team" type="text" value=<%= home_team %> size="44"> </td> 
-      <td><input name="away_team" type="text" value=<%= away_team %> size="44"> </td>
+      <td><input name="home_team" type="text" size="44" value=<%= home_team %>> </td> 
+      <td><input name="away_team" type="text" size="44" value=<%= away_team %>> </td>
     </tr>
   </tbody>
 </table>
@@ -70,14 +79,14 @@
   <tbody>
     <td><input name="orig_date" type="date" value=<%= orig_date %> > </td> 
     <td><input name="orig_time" type="time" value=<%= orig_time %> > </td>
-    <td><input name="orig_venue" type="text" value=<%= orig_venue %> size="44"> </td>
+    <td><input name="orig_venue" type="text" size="44" value=<%= orig_venue %>> </td>
   </tbody>
 </table>
 
-<label for="new_time_false">Vi återkommer med nytt speldatum inom 14 dagar</label>
-<input type="radio" name="new_time" id="new_time_false" value="new_time_false" checked><br>
-<label for="new_time_true">Vi är överens om ny tid</label>
-<input type="radio" name="new_time" id="new_time_true" value="new_time_true"><br>
+<input type="radio" name="new_fixture_date" id="new_fixture_date_false" value="false" checked>
+<label for="new_fixture_date_false">Vi återkommer med nytt speldatum inom 14 dagar</label><br>
+<input type="radio" name="new_fixture_date" id="new_fixture_date_true" value="true">
+<label for="new_fixture_date_true">Vi är överens om ny tid</label><br>
 <table>
   <thead>
     <tr>
@@ -89,7 +98,7 @@
   <tbody>
     <td><input name="new_date" type="date" / > </td> 
     <td><input name="new_time" type="time" / > </td>
-    <td><input name="new_venue" type="text" value=<%= orig_venue %> size="44"/ > </td>
+    <td><input name="new_venue" type="text" size="44" value=<%= orig_venue %> > </td>
   </tbody>
 </table>
 
@@ -101,7 +110,7 @@
   </thead>
   <tbody>
     <tr>
-      <td><input name="ansökande_förening" type="text" value="Ekerö IK" size="30" /></td>
+      <td><input name="applicant_club" type="text" value="Ekerö IK" size="30" ></td>
     </tr>
   </tbody>
 </table>
@@ -115,8 +124,8 @@
   </thead>
   <tbody>
     <tr>
-      <td><input name="applicant_contact" type="text" value=<%= applicant_contact %> size="30" /></td>
-      <td><input name="opponent_contact" type="text" value=<%= opponent_contact %> size="30" /></td>
+      <td><input name="applicant_contact" type="text" size="30" value=<%= applicant_contact %> ></td>
+      <td><input name="opponent_contact" type="text" size="30" value=<%= opponent_contact %> ></td>
     </tr>
   </tbody>
 </table>
@@ -130,8 +139,8 @@
   </thead>
   <tbody>
     <tr>
-      <td><input name="applicant_phone" type="text" value=<%= applicant_phone %> size="30" /></td>
-      <td><input name="opponent_phone" type="text" value=<%= opponent_phone %> size="30" /></td>
+      <td><input name="applicant_phone" type="text" size="30" value=<%= applicant_phone %> ></td>
+      <td><input name="opponent_phone" type="text" size="30" value=<%= opponent_phone %> ></td>
     </tr>
   </tbody>
 </table>
@@ -145,8 +154,8 @@
   </thead>
   <tbody>
     <tr>
-      <td><input name="applicant_email" type="text" value=<%= applicant_email %> size="30" /></td>
-      <td><input name="opponent_email" type="text" value=<%= opponent_email %> size="30" /></td>
+      <td><input name="applicant_email" type="text" size="30" value=<%= applicant_email %> ></td>
+      <td><input name="opponent_email" type="text" size="30" value=<%= opponent_email %> ></td>
     </tr>
   </tbody>
 
