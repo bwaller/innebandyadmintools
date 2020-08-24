@@ -8,8 +8,8 @@ margin_width_px = 60
 margin_height_px = 40
 start_hour = 8
 end_hour = 21
-start_date = Date.new(2019,9,26)
-end_date = Date.new(2020,04,15)
+start_date = Date.new(2020,9,20)
+end_date = Date.new(2021,04,20)
 canvas_width_px = margin_width_px+(end_hour-start_hour)*60
 colors = ["Blue", "DarkTurquoise", "Red", "Green", "YellowGreen", "SlateGray"]
 
@@ -78,7 +78,7 @@ ARGV.each do |file|
     end
 
     cal.events.each do |event|
-      event.x_custom_property.push(colors[cal_index])
+      event.append_custom_property "color", colors[cal_index] 
       date = event.dtstart.to_date
       if dates[date] then
          dates[date][cal_index] = Array.new if !dates[date][cal_index]
@@ -138,8 +138,8 @@ dates.each do |date,cals|
       x1 = (event.dtend.day_fraction*24*60).to_i-start_hour*60 + margin_width_px
       y1 = y0 + event_height_px
 
-      rect.stroke(event.x_custom_property[0])
-      rect.fill(event.x_custom_property[0])
+      rect.stroke(event.custom_properties["color"][0])
+      rect.fill(event.custom_properties["color"][0])
       rect.fill_opacity(0.2)
       rect.roundrectangle(x0,y0, x1,y1, event_height_px/4,event_height_px/4)
       rect.annotate(canvas,x1-x0,y1-y0,x0,y0,"#{event.summary}")
