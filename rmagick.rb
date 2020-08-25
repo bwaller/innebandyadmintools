@@ -9,7 +9,7 @@ margin_height_px = 40
 start_hour = 8
 end_hour = 21
 start_date = Date.new(2020,9,20)
-end_date = Date.new(2021,04,20)
+end_date = Date.new(2021,03,29)
 canvas_width_px = margin_width_px+(end_hour-start_hour)*60
 colors = ["Blue", "DarkTurquoise", "Red", "Green", "YellowGreen", "SlateGray"]
 
@@ -185,7 +185,12 @@ end
 date_line.draw(canvas)
 hour_line.draw(canvas)
 quarter_line.draw(canvas)
-rect.draw(canvas)
+begin
+  rect.draw(canvas)
+rescue 
+  puts "Draw failed! Check values of variables 'start_date' (#{start_date}) and 'end_date' (#{end_date}) in top of file '#{__FILE__}'."
+  exit
+end
 canvas.trim!
 canvas.write("junk.png")
 
