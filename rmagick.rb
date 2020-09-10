@@ -104,7 +104,8 @@ end
 # Create the image
 ###################
 canvas = Magick::ImageList.new
-canvas.new_image(canvas_width_px, event_height_px*row_count + margin_height_px)
+canvas_height_px = event_height_px*row_count + margin_height_px
+canvas.new_image(canvas_width_px, canvas_height_px)
 
 y0 = margin_height_px
 text_width_px = 60
@@ -192,7 +193,14 @@ rescue
   exit
 end
 canvas.trim!
-canvas.write("junk.png")
+nb_a4pages = (canvas_height_px/(canvas_width_px*Math.sqrt(2))).to_i+1
+for i in 1..nb_a4pages do
+	puts i*canvas_width_px*Math.sqrt(2)
+	page = canvas.crop(0,(i-1)*canvas_width_px*Math.sqrt(2),canvas_width_px,canvas_width_px*Math.sqrt(2))
+	page.trim!
+	page.write("junk#{i}.jpg")
+end
+#canvas.write("junk.png")
 
 #puts canvas_width_px.to_s + "x" + canvas_height_px.to_s 
 #puts canvas_height_px, y0
